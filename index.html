@@ -25,7 +25,43 @@
 </head>
 <body class="h-full font-sans antialiased">
 
-    <div class="flex flex-col justify-center items-center h-screen max-h-screen p-4 sm:p-8 bg-gray-100">
+    <!-- Schermata Password -->
+    <div id="password-screen" class="fixed inset-0 bg-gray-800 bg-opacity-90 flex justify-center items-center z-50 p-4">
+        <div class="bg-white w-full max-w-sm p-6 sm:p-8 rounded-xl shadow-2xl text-center">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Lezione Simulata AJ56 - all1</h2>
+            <p class="text-gray-600 mb-6">Accesso consentito a<br>Salvatore Costantino<br>Slide e contenuto html.</p>
+            
+            <input type="password" id="password-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Password...">
+            <p id="password-error" class="text-red-600 text-sm mt-3 h-5"></p> <!-- Spazio per errore -->
+            <button id="password-submit" class="w-full bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-150 mt-4">
+                Entra
+            </button>
+
+
+
+
+
+<!-- --- PULSANTE PDF AGGIUNTO --- -->
+            <a href="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf"
+               download
+               class="block w-full bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-150 mt-4 text-center no-underline">
+                Lezione PDF
+            </a>
+            <!-- --- FINE PULSANTE PDF --- -->
+
+
+
+
+
+
+
+
+
+        </div>
+    </div>
+
+    <!-- Contenuto Principale (nascosto di default) -->
+    <div id="main-content" class="flex flex-col justify-center items-center h-screen max-h-screen p-4 sm:p-8 bg-gray-100 hidden">
 
         <!-- Colonna Unica: Slide Attuale -->
         <div class="flex flex-col w-full max-w-6xl h-[85vh] bg-white shadow-2xl rounded-xl overflow-hidden z-10">
@@ -57,6 +93,15 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+
+            // --- RIFERIMENTI DOM PER PASSWORD ---
+            const passwordScreen = document.getElementById('password-screen');
+            const passwordInput = document.getElementById('password-input');
+            const passwordSubmit = document.getElementById('password-submit');
+            const passwordError = document.getElementById('password-error');
+            const mainContent = document.getElementById('main-content');
+            
+            const correctPassword = "laruotachegira";
 
             // --- 1. DATI DELLE SLIDE ---
             const slides = [
@@ -216,12 +261,6 @@
                             <div class="bg-orange-100 border border-orange-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
                                 <h4 class="text-2xl font-semibold text-orange-800 text-center">cooperative learning</h4>
                             </div>
-
-
-
-
-
-
                         </div>
                     `
                 },
@@ -248,8 +287,6 @@
                                 <h4 class="text-2xl font-semibold text-red-800 text-center">strumenti compensativi</h4>
                             </div>
                         </div>
-
-
                     `
                 },
                 
@@ -264,7 +301,7 @@
                         </ul>
                     `
                 },
-// --- SLIDE 10 MODIFICATA ---
+                // --- SLIDE 10 MODIFICATA ---
                 {
                     title: "Fase post-attiva - Verifica e Valutazione",
                     noteId: "note-s8",
@@ -287,167 +324,143 @@
                         </div>
                     `
                 },
-
-
-
-{
-    title: "Fase Post-attiva",
-    noteId: "note-s6", // Ho ipotizzato un nuovo ID, puoi cambiarlo se necessario
-    content: `
-      
-
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100">
-                    <th class="border border-gray-300 p-2">attività</th>
-                    <th class="border border-gray-300 p-2">Per nulla</th>
-                    <th class="border border-gray-300 p-2">Sufficiente</th>
-                    <th class="border border-gray-300 p-2">Giusto</th>
-                    <th class="border border-gray-300 p-2">Più che<br>Giusto</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="border border-gray-300 p-2">ha partecipato</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ha ascoltato gli insegnamenti</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">ha lavorato con impegno</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ha collaborato attivamente nel gruppo</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">In base al punto di partenza è migliorato</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ha suonato il brano</td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                    <td class="border border-gray-300 p-2"></td>
-                </tr>
-            </tbody>
-        </table>
-
-        </div>
-    `
-},
-
-
-
-{
-    title: "Autovalutazione",
-    noteId: "note-s7",
-    content: `
-
-        <table class="w-full border-collapse border border-gray-300">
-            <thead>
-                <tr class="bg-gray-100 text-center">
-                    <th class="border border-gray-300 p-2">Criterio</th>
-                    <th class="border border-gray-300 p-2">Tanto</th>
-                    <th class="border border-gray-300 p-2">Abbastanza</th>
-                    <th class="border border-gray-300 p-2">Poco</th>
-                    <th class="border border-gray-300 p-2">Per niente</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ho trovato interessante questa attività.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Mi sono sentito a mio agio durante il lavoro.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Suonare davanti a un pubblico mi ha dato una bella emozione.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ho potuto contribuire con le mie proposte.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ho completato gli incarichi che mi sono stati assegnati.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Ho offerto supporto ai miei compagni quando necessario.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Sarei felice di partecipare di nuovo a un'attività simile.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="per_niente"></td>
-                </tr>
-                <tr>
-                    <td class="border border-gray-300 p-2">Sono soddisfatto/a di come ho eseguito il mio brano al pianoforte.</td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="tanto"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="abbastanza"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="poco"></td>
-                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="per_niente"></td>
-                </tr>
-            
-            </tbody>
-        </table>
-    `
-},
-
-
-
-
-
-
-
-
-
-
-
-
-
+                {
+                    title: "Fase Post-attiva",
+                    noteId: "note-s6", // Ho ipotizzato un nuovo ID, puoi cambiarlo se necessario
+                    content: `
+                        <table class="w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100">
+                                    <th class="border border-gray-300 p-2">attività</th>
+                                    <th class="border border-gray-300 p-2">Per nulla</th>
+                                    <th class="border border-gray-300 p-2">Sufficiente</th>
+                                    <th class="border border-gray-300 p-2">Giusto</th>
+                                    <th class="border border-gray-300 p-2">Più che<br>Giusto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">ha partecipato</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ha ascoltato gli insegnamenti</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">ha lavorato con impegno</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ha collaborato attivamente nel gruppo</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">In base al punto di partenza è migliorato</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ha suonato il brano</td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                    <td class="border border-gray-300 p-2"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    `
+                },
+                {
+                    title: "Autovalutazione",
+                    noteId: "note-s7",
+                    content: `
+                        <table class="w-full border-collapse border border-gray-300">
+                            <thead>
+                                <tr class="bg-gray-100 text-center">
+                                    <th class="border border-gray-300 p-2">Criterio</th>
+                                    <th class="border border-gray-300 p-2">Tanto</th>
+                                    <th class="border border-gray-300 p-2">Abbastanza</th>
+                                    <th class="border border-gray-300 p-2">Poco</th>
+                                    <th class="border border-gray-300 p-2">Per niente</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ho trovato interessante questa attività.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Mi sono sentito a mio agio durante il lavoro.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Suonare davanti a un pubblico mi ha dato una bella emozione.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ho potuto contribuire con le mie proposte.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ho completato gli incarichi che mi sono stati assegnati.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Ho offerto supporto ai miei compagni quando necessario.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Sarei felice di partecipare di nuovo a un'attività simile.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="per_niente"></td>
+                                </tr>
+                                <tr>
+                                    <td class="border border-gray-300 p-2">Sono soddisfatto/a di come ho eseguito il mio brano al pianoforte.</td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="tanto"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="abbastanza"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="poco"></td>
+                                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="per_niente"></td>
+                                </tr>
+                            
+                            </tbody>
+                        </table>
+                    `
+                },
                 {
                     title: "Conclusione", // Rinumerata (era 10)
                     noteId: "note-s10",
@@ -467,81 +480,117 @@
                             </p>
                             <p class="text-xl">
                                 Un ringraziamento speciale alla mia Tutor e a tutti i Professori per il prezioso lavoro svolto durante questo corso.
-                            </p> <!-- ERRORE CORRETTO QUI (era </Ci>) -->
+                            </p>
                         </div>
                     `
                 }
             ];
 
-            // --- 2. RIFERIMENTI DOM ---
-            const slideTitleEl = document.getElementById('slide-title');
-            const slideContentEl = document.getElementById('slide-content');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
-            const slideCounterEl = document.getElementById('slide-counter');
-            
-            let currentSlide = 0;
+            // --- Funzione per inizializzare la presentazione ---
+            function initializePresentation() {
+                // --- 2. RIFERIMENTI DOM (Presentazione) ---
+                const slideTitleEl = document.getElementById('slide-title');
+                const slideContentEl = document.getElementById('slide-content');
+                const prevBtn = document.getElementById('prev-btn');
+                const nextBtn = document.getElementById('next-btn');
+                const slideCounterEl = document.getElementById('slide-counter');
+                
+                let currentSlide = 0;
 
-            // --- 3. FUNZIONE DI RENDER ---
-            function renderSlide(slideIndex) {
-                // Prende i dati della slide corrente
-                const slide = slides[slideIndex];
+                // --- 3. FUNZIONE DI RENDER ---
+                function renderSlide(slideIndex) {
+                    // Prende i dati della slide corrente
+                    const slide = slides[slideIndex];
 
-                // Aggiorna il contenuto della slide
-                slideTitleEl.innerHTML = slide.title;
-                slideContentEl.innerHTML = slide.content;
+                    // Aggiorna il contenuto della slide
+                    slideTitleEl.innerHTML = slide.title;
+                    slideContentEl.innerHTML = slide.content;
 
-                // Aggiungi text-center per la slide 1 (index 0) e 8 (index 7)
-                if (slideIndex === 0 || slideIndex === 7) {
-                    slideTitleEl.classList.add('text-center');
+                    // Aggiungi text-center per la slide 1 (index 0) e 8 (index 7)
+                    if (slideIndex === 0 || slideIndex === 7) {
+                        slideTitleEl.classList.add('text-center');
+                    } else {
+                        slideTitleEl.classList.remove('text-center');
+                    }
+
+                    // Aggiorna il contatore
+                    slideCounterEl.textContent = `Slide ${slideIndex + 1} di ${slides.length}`;
+
+                    // Aggiorna lo stato dei bottoni
+                    prevBtn.disabled = slideIndex === 0;
+                    nextBtn.disabled = slideIndex === slides.length - 1;
+                }
+
+                // --- 4. FUNZIONI DI NAVIGAZIONE ---
+                function showNextSlide() {
+                    if (currentSlide < slides.length - 1) {
+                        currentSlide++;
+                        renderSlide(currentSlide);
+                    }
+                }
+
+                function showPrevSlide() {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        renderSlide(currentSlide);
+                    }
+                }
+
+                // --- 5. EVENT LISTENERS (Presentazione) ---
+                
+                // Click sui bottoni
+                nextBtn.addEventListener('click', showNextSlide);
+                prevBtn.addEventListener('click', showPrevSlide);
+
+                // Navigazione da tastiera
+                document.addEventListener('keydown', (e) => {
+                    // Impedisce la navigazione con le frecce se lo schermo password è attivo
+                    // (Questo listener viene aggiunto solo DOPO lo sblocco, quindi è ok)
+                    if (e.key === 'ArrowRight') {
+                        showNextSlide();
+                    } else if (e.key === 'ArrowLeft') {
+                        showPrevSlide();
+                    }
+                });
+
+                // --- 6. INIZIALIZZAZIONE ---
+                // Mostra la prima slide al caricamento
+                renderSlide(currentSlide);
+            }
+
+            // --- Funzione per controllare la password ---
+            function checkPassword() {
+                const enteredPassword = passwordInput.value;
+                if (enteredPassword === correctPassword) {
+                    // Password corretta
+                    passwordScreen.classList.add('hidden'); // Nasconde la schermata password
+                    mainContent.classList.remove('hidden'); // Mostra il contenuto principale
+                    initializePresentation(); // Avvia la logica della presentazione
                 } else {
-                    slideTitleEl.classList.remove('text-center');
-                }
-
-                // Aggiorna il contatore
-                slideCounterEl.textContent = `Slide ${slideIndex + 1} di ${slides.length}`;
-
-                // Aggiorna lo stato dei bottoni
-                prevBtn.disabled = slideIndex === 0;
-                nextBtn.disabled = slideIndex === slides.length - 1;
-            }
-
-            // --- 4. FUNZIONI DI NAVIGAZIONE ---
-            function showNextSlide() {
-                if (currentSlide < slides.length - 1) {
-                    currentSlide++;
-                    renderSlide(currentSlide);
+                    // Password errata
+                    passwordError.textContent = "Password errata. Riprova.";
+                    passwordInput.value = "";
+                    passwordInput.focus(); // Rimette il focus sull'input
                 }
             }
 
-            function showPrevSlide() {
-                if (currentSlide > 0) {
-                    currentSlide--;
-                    renderSlide(currentSlide);
-                }
-            }
-            // ERRORE CORRETTO QUI (rimossa la 'L' vagante)
-
-            // --- 5. EVENT LISTENERS ---
+            // --- EVENT LISTENERS (Password) ---
+            passwordSubmit.addEventListener('click', checkPassword);
             
-            // Click sui bottoni
-            nextBtn.addEventListener('click', showNextSlide);
-            prevBtn.addEventListener('click', showPrevSlide);
-
-            // Navigazione da tastiera
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight') {
-                    showNextSlide();
-                } else if (e.key === 'ArrowLeft') {
-                    showPrevSlide();
+            passwordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    checkPassword(); // Permette di premere Invio per accedere
+                } else {
+                    // Nasconde l'errore non appena l'utente inizia a digitare di nuovo
+                    if (passwordError.textContent) {
+                        passwordError.textContent = "";
+                    }
                 }
             });
-
-            // --- 6. INIZIALIZZAZIONE ---
-            // Mostra la prima slide al caricamento
-            renderSlide(currentSlide);
+            
+            // Imposta il focus sull'input all'avvio
+            passwordInput.focus();
         });
     </script>
 </body>
 </html>
-
