@@ -21,6 +21,23 @@
         #presenter-notes::-webkit-scrollbar-thumb:hover {
             background: #64748b;
         }
+
+        /* Stile per forzare l'aspect ratio del video */
+        /* Questo assicura che il player di YouTube mantenga 16:9 */
+        .aspect-w-16 {
+            position: relative;
+            padding-bottom: 56.25%; /* 9 / 16 = 0.5625 */
+        }
+        .aspect-h-9 {
+            height: 0;
+        }
+        .aspect-w-16 > iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body class="h-full font-sans antialiased">
@@ -100,6 +117,29 @@
         </div>
 
     </div>
+
+    <!-- === MODALE VIDEO YOUTUBE AGGIUNTO === -->
+    <div id="video-modal" class="fixed inset-0 bg-gray-900 bg-opacity-80 flex justify-center items-center z-[100] p-4 hidden">
+        <div class="bg-black w-full max-w-4xl shadow-2xl rounded-lg overflow-hidden relative">
+            <!-- Pulsante Chiudi -->
+            <button id="video-modal-close" class="absolute -top-2 -right-2 sm:top-2 sm:right-2 z-[110] bg-white text-black rounded-full w-10 h-10 flex justify-center items-center shadow-lg hover:bg-gray-200 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+            
+            <!-- Contenitore Iframe (per aspect ratio) -->
+            <div class="aspect-w-16 aspect-h-9">
+                <iframe 
+                    id="video-iframe" 
+                    class="w-full h-full" 
+                    src="" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+    <!-- === FINE MODALE VIDEO === -->
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -210,6 +250,7 @@
                     `
                 },
                 
+                // --- SLIDE 5 (Indice 4) MODIFICATA ---
                 {
                     title: "Fase attiva - Contenuti e Scelte", // Rinumerata (era 4)
                     noteId: "note-s4",
@@ -220,8 +261,21 @@
                             <li><strong>Perché?</strong> Brano noto, gradito. Struttura chiara. Motore ritmico ideale per "agganciare" l'attenzione dell'allievo ADHD.</li>
                             <li><strong>Tecnologie Digitali:</strong> LIM (spartito, ascolto guidato); Tablet (App)</li>
                         </ul>
+                        
+                        <!-- PULSANTE VIDEO AGGIUNTO -->
+                        <div class="mt-8 pt-6 border-t border-gray-200">
+                            <button 
+                                id="youtube-btn-albachiara" 
+                                class="px-5 py-3 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-150 flex items-center justify-center space-x-2 w-full sm:w-auto"
+                            >
+                                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M19.803 5.421a2.476 2.476 0 00-1.751-1.752C16.55 3.25 12 3.25 12 3.25s-4.55 0-6.052.419a2.476 2.476 0 00-1.751 1.752C3.78 6.924 3.75 9.875 3.75 12s.03 5.076.447 6.579a2.476 2.476 0 001.751 1.752C7.45 20.75 12 20.75 12 20.75s4.55 0 6.052-.419a2.476 2.476 0 001.751-1.752C20.22 17.076 20.25 14.125 20.25 12s-.03-5.076-.447-6.579zM9.75 15.375V8.625l5.122 3.375-5.122 3.375z" clip-rule="evenodd" /></svg>
+                                <span>Albachiara - Vasco Rossi</span>
+                            </button>
+                        </div>
                     `
                 },
+                // --- FINE MODIFICA ---
+
                 {
                     title: "Fase attiva - Lezione Individuale (1h) con ADHD", // Rinumerata (era 5)
                     noteId: "note-s5",
@@ -505,7 +559,28 @@
                 const nextBtn = document.getElementById('next-btn');
                 const slideCounterEl = document.getElementById('slide-counter');
                 
+                // --- RIFERIMENTI DOM PER VIDEO MODAL (AGGIUNTO) ---
+                const videoModal = document.getElementById('video-modal');
+                const videoModalClose = document.getElementById('video-modal-close');
+                const videoFrame = document.getElementById('video-iframe');
+                // Modifica l'URL per usare /embed/ e aggiungere autoplay
+                const videoUrl = "https://www.canva.com/design/DAG4A15dcIg/view?embed";
                 let currentSlide = 0;
+
+                // --- LOGICA CHIUSURA VIDEO MODAL (AGGIUNTA) ---
+                const closeVideoModal = () => {
+                    videoModal.classList.add('hidden');
+                    videoFrame.src = ""; // Ferma il video quando si chiude il modale
+                };
+                
+                videoModalClose.addEventListener('click', closeVideoModal);
+                // Chiudi anche cliccando sullo sfondo
+                videoModal.addEventListener('click', (e) => {
+                    if (e.target === videoModal) {
+                        closeVideoModal();
+                    }
+                });
+                // --- FINE LOGICA CHIUSURA VIDEO ---
 
                 // --- 3. FUNZIONE DI RENDER ---
                 function renderSlide(slideIndex) {
@@ -522,6 +597,19 @@
                     } else {
                         slideTitleEl.classList.remove('text-center');
                     }
+
+                    // --- AGGIUNTA LOGICA PER PULSANTE VIDEO (MODIFICATA) ---
+                    // (Deve essere fatto *dopo* l'iniezione dell'HTML per trovare il pulsante)
+                    if (slideIndex === 4) { // Slide "Contenuti e Scelte" (Indice 4)
+                        const videoBtn = document.getElementById('youtube-btn-albachiara');
+                        if (videoBtn) {
+                            videoBtn.addEventListener('click', () => {
+                                videoFrame.src = videoUrl; // Imposta l'URL del video
+                                videoModal.classList.remove('hidden'); // Mostra il modale
+                            });
+                        }
+                    }
+                    // --- FINE LOGICA PULSANTE VIDEO ---
 
                     // Aggiorna il contatore
                     slideCounterEl.textContent = `Slide ${slideIndex + 1} di ${slides.length}`;
