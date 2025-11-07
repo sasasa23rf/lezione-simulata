@@ -123,8 +123,8 @@
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // IMPORTANTE: Cambia questo nome con il nome esatto del tuo file PDF
-        const pdfUrl = './provaorale60CFAsalvatorecostantino.pdf';
+        // NOME DEL FILE PDF (deve essere nella stessa cartella)
+        const pdfUrl = 'provaorale60CFAsalvatorecostantino.pdf';
 
         let pdfDoc = null;
         let pageNum = 1;
@@ -143,14 +143,13 @@
             pageIsRendering = true;
 
             pdfDoc.getPage(num).then(page => {
-                // Calcola la scala per adattare alla finestra
                 const viewport = page.getViewport({ scale: 1 });
                 const windowWidth = window.innerWidth;
                 const windowHeight = window.innerHeight - 100;
                 
                 const scaleX = windowWidth / viewport.width;
                 const scaleY = windowHeight / viewport.height;
-                const scale = Math.min(scaleX, scaleY) * 0.9; // 0.9 per margini
+                const scale = Math.min(scaleX, scaleY) * 0.9;
 
                 const scaledViewport = page.getViewport({ scale: scale });
 
@@ -172,42 +171,31 @@
 
                     updatePageInfo();
                     updateButtons();
-                }).catch(err => {
-                    console.error('Errore nel rendering:', err);
-                    loadingDiv.innerHTML = 'Errore nel rendering della pagina.';
                 });
-            }).catch(err => {
-                console.error('Errore nel recupero della pagina:', err);
-                loadingDiv.innerHTML = 'Errore nel caricamento della pagina.';
             });
         }
 
-        // Aggiorna le informazioni sulla pagina
         function updatePageInfo() {
             document.getElementById('page-num').textContent = pageNum;
         }
 
-        // Aggiorna lo stato dei pulsanti
         function updateButtons() {
             prevButton.disabled = pageNum <= 1;
             nextButton.disabled = pageNum >= pdfDoc.numPages;
         }
 
-        // Pagina precedente
         function showPrevPage() {
             if (pageNum <= 1) return;
             pageNum--;
             queueRenderPage(pageNum);
         }
 
-        // Pagina successiva
         function showNextPage() {
             if (pageNum >= pdfDoc.numPages) return;
             pageNum++;
             queueRenderPage(pageNum);
         }
 
-        // Metti in coda il rendering
         function queueRenderPage(num) {
             if (pageIsRendering) {
                 pageNumIsPending = num;
@@ -217,12 +205,10 @@
         }
 
         // Carica il PDF
-        console.log('Tentativo di caricamento PDF da:', pdfUrl);
+        console.log('Caricamento PDF da:', pdfUrl);
         
-        const loadingTask = pdfjsLib.getDocument(pdfUrl);
-        
-        loadingTask.promise.then(doc => {
-            console.log('PDF caricato con successo!');
+        pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
+            console.log('PDF caricato con successo! Pagine:', doc.numPages);
             pdfDoc = doc;
             document.getElementById('page-count').textContent = pdfDoc.numPages;
             loadingDiv.style.display = 'none';
@@ -231,24 +217,22 @@
             pageInfo.style.display = 'block';
             renderPage(pageNum);
         }).catch(err => {
-            console.error('Errore nel caricamento del PDF:', err);
+            console.error('Errore completo:', err);
             loadingDiv.innerHTML = `
                 <div>❌ Errore nel caricamento del PDF</div>
                 <div style="font-size: 14px; margin-top: 10px;">
-                    Verifica che il file <strong>provaorale60CFAsalvatorecostantino.pdf</strong><br>
-                    sia presente nella stessa cartella dell'index.html
+                    Il file <strong>provaorale60CFAsalvatorecostantino.pdf</strong><br>
+                    non è stato trovato nella stessa cartella dell'index.html
                 </div>
                 <div style="font-size: 12px; margin-top: 10px; color: #ff6666;">
-                    Errore: ${err.message}
+                    Errore tecnico: ${err.message}
                 </div>
             `;
         });
 
-        // Eventi dei pulsanti
         prevButton.addEventListener('click', showPrevPage);
         nextButton.addEventListener('click', showNextPage);
 
-        // Supporto per le frecce della tastiera
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
                 showPrevPage();
@@ -257,7 +241,6 @@
             }
         });
 
-        // Ridimensiona il canvas quando la finestra viene ridimensionata
         window.addEventListener('resize', () => {
             if (pdfDoc) {
                 renderPage(pageNum);
