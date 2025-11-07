@@ -26,12 +26,29 @@
             justify-content: center;
             align-items: center;
             background-color: #fff;
+            position: relative;
+        }
+
+        #pdf-viewer {
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
         #pdf-canvas {
-            max-width: 100%;
-            max-height: 100%;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: block;
+        }
+
+        #annotation-layer {
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        #annotation-layer a {
+            position: absolute;
+            cursor: pointer;
         }
 
         .nav-button {
@@ -90,10 +107,13 @@
 </head>
 <body>
 
-    <div id="loading">Caricamento Lezione Simulata Salvatore Costantino...</div>
+    <div id="loading">Caricamento PDF in corso...</div>
 
     <div id="pdf-container">
-        <canvas id="pdf-canvas"></canvas>
+        <div id="pdf-viewer">
+            <canvas id="pdf-canvas"></canvas>
+            <div id="annotation-layer"></div>
+        </div>
     </div>
 
     <button id="prev-button" class="nav-button" style="display:none;">&#8249;</button>
@@ -119,6 +139,8 @@
         const loadingDiv = document.getElementById('loading');
         const prevButton = document.getElementById('prev-button');
         const nextButton = document.getElementById('next-button');
+        const annotationLayer = document.getElementById('annotation-layer');
+        const pdfViewer = document.getElementById('pdf-viewer');
 
         // Renderizza la pagina
         function renderPage(num) {
@@ -138,12 +160,19 @@
                 canvas.height = scaledViewport.height;
                 canvas.width = scaledViewport.width;
 
+                // Aggiorna dimensioni del contenitore
+                pdfViewer.style.width = scaledViewport.width + 'px';
+                pdfViewer.style.height = scaledViewport.height + 'px';
+
                 const renderContext = {
                     canvasContext: ctx,
                     viewport: scaledViewport
                 };
 
-                page.render(renderContext).promise.then(() => {
+                // Renderizza il PDF
+                const renderTask = page.render(renderContext);
+                
+                renderTask.promise.then(() => {
                     pageIsRendering = false;
 
                     if (pageNumIsPending !== null) {
@@ -152,6 +181,42 @@
                     }
 
                     updateButtons();
+                });
+
+                // Renderizza le annotazioni (link cliccabili)
+                page.getAnnotations().then(annotations => {
+                    // Pulisci il layer delle annotazioni
+                    annotationLayer.innerHTML = '';
+
+                    annotations.forEach(annotation => {
+                        // Gestisci solo le annotazioni di tipo Link
+                        if (annotation.subtype === 'Link') {
+                            const link = document.createElement('a');
+                            
+                            // Imposta l'URL se esiste
+                            if (annotation.url) {
+                                link.href = annotation.url;
+                                link.target = '_blank'; // Apri in una nuova scheda
+                                link.rel = 'noopener noreferrer'; // Sicurezza
+                            }
+
+                            // Calcola la posizione del link
+                            const rect = annotation.rect;
+                            const [x1, y1, x2, y2] = scaledViewport.convertToViewportRectangle(rect);
+                            
+                            link.style.left = Math.min(x1, x2) + 'px';
+                            link.style.top = Math.min(y1, y2) + 'px';
+                            link.style.width = Math.abs(x2 - x1) + 'px';
+                            link.style.height = Math.abs(y2 - y1) + 'px';
+
+                            // Stile del link (invisibile ma cliccabile)
+                            link.style.position = 'absolute';
+                            link.style.zIndex = '100';
+                            
+                            // Aggiungi il link al layer
+                            annotationLayer.appendChild(link);
+                        }
+                    });
                 });
             });
         }
