@@ -19,6 +19,75 @@
             font-family: Arial, sans-serif;
         }
 
+        /* Password Modal */
+        #password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        #password-box {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        #password-box h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+        }
+
+        #password-input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #password-input:focus {
+            border-color: #4CAF50;
+        }
+
+        #password-submit {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #password-submit:hover {
+            background-color: #45a049;
+        }
+
+        #password-error {
+            color: #f44336;
+            margin-top: 10px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* PDF Viewer */
         #pdf-container {
             width: 100%;
             height: 100%;
@@ -102,10 +171,24 @@
             z-index: 999;
             text-align: center;
             padding: 20px;
+            display: none;
         }
     </style>
 </head>
 <body>
+
+    <!-- Password Modal -->
+    <div id="password-modal">
+        <div id="password-box">
+            <h2>Accesso Protetto</h2>
+            <p style="color: #666; margin-bottom: 20px;">Inserisci la password per accedere alla presentazione</p>
+            <form id="password-form">
+                <input type="password" id="password-input" placeholder="Password" autocomplete="off" autofocus>
+                <button type="submit" id="password-submit">Accedi</button>
+                <div id="password-error">❌ Password errata. Riprova.</div>
+            </form>
+        </div>
+    </div>
 
     <div id="loading">Caricamento PDF in corso...</div>
 
@@ -122,11 +205,38 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
     <script>
+        // Password protection
+        const correctPassword = 'aaa';
+        const passwordModal = document.getElementById('password-modal');
+        const passwordForm = document.getElementById('password-form');
+        const passwordInput = document.getElementById('password-input');
+        const passwordError = document.getElementById('password-error');
+
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const enteredPassword = passwordInput.value;
+
+            if (enteredPassword === correctPassword) {
+                // Password corretta: nascondi il modal e carica il PDF
+                passwordModal.style.display = 'none';
+                loadPDF();
+            } else {
+                // Password errata: mostra errore
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // Nascondi errore dopo 3 secondi
+                setTimeout(() => {
+                    passwordError.style.display = 'none';
+                }, 3000);
+            }
+        });
+
         // Configura PDF.js
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        // Nome del file PDF
         const pdfUrl = 'provaorale60CFAsalvatorecostantino.pdf';
 
         let pdfDoc = null;
@@ -142,7 +252,6 @@
         const annotationLayer = document.getElementById('annotation-layer');
         const pdfViewer = document.getElementById('pdf-viewer');
 
-        // Renderizza la pagina
         function renderPage(num) {
             pageIsRendering = true;
 
@@ -160,7 +269,6 @@
                 canvas.height = scaledViewport.height;
                 canvas.width = scaledViewport.width;
 
-                // Aggiorna dimensioni del contenitore
                 pdfViewer.style.width = scaledViewport.width + 'px';
                 pdfViewer.style.height = scaledViewport.height + 'px';
 
@@ -169,7 +277,6 @@
                     viewport: scaledViewport
                 };
 
-                // Renderizza il PDF
                 const renderTask = page.render(renderContext);
                 
                 renderTask.promise.then(() => {
@@ -183,24 +290,19 @@
                     updateButtons();
                 });
 
-                // Renderizza le annotazioni (link cliccabili)
                 page.getAnnotations().then(annotations => {
-                    // Pulisci il layer delle annotazioni
                     annotationLayer.innerHTML = '';
 
                     annotations.forEach(annotation => {
-                        // Gestisci solo le annotazioni di tipo Link
                         if (annotation.subtype === 'Link') {
                             const link = document.createElement('a');
                             
-                            // Imposta l'URL se esiste
                             if (annotation.url) {
                                 link.href = annotation.url;
-                                link.target = '_blank'; // Apri in una nuova scheda
-                                link.rel = 'noopener noreferrer'; // Sicurezza
+                                link.target = '_blank';
+                                link.rel = 'noopener noreferrer';
                             }
 
-                            // Calcola la posizione del link
                             const rect = annotation.rect;
                             const [x1, y1, x2, y2] = scaledViewport.convertToViewportRectangle(rect);
                             
@@ -208,12 +310,9 @@
                             link.style.top = Math.min(y1, y2) + 'px';
                             link.style.width = Math.abs(x2 - x1) + 'px';
                             link.style.height = Math.abs(y2 - y1) + 'px';
-
-                            // Stile del link (invisibile ma cliccabile)
                             link.style.position = 'absolute';
                             link.style.zIndex = '100';
                             
-                            // Aggiungi il link al layer
                             annotationLayer.appendChild(link);
                         }
                     });
@@ -221,27 +320,23 @@
             });
         }
 
-        // Aggiorna lo stato dei pulsanti
         function updateButtons() {
             prevButton.disabled = pageNum <= 1;
             nextButton.disabled = pageNum >= pdfDoc.numPages;
         }
 
-        // Pagina precedente
         function showPrevPage() {
             if (pageNum <= 1) return;
             pageNum--;
             queueRenderPage(pageNum);
         }
 
-        // Pagina successiva
         function showNextPage() {
             if (pageNum >= pdfDoc.numPages) return;
             pageNum++;
             queueRenderPage(pageNum);
         }
 
-        // Metti in coda il rendering
         function queueRenderPage(num) {
             if (pageIsRendering) {
                 pageNumIsPending = num;
@@ -250,28 +345,29 @@
             }
         }
 
-        // Carica il PDF
-        pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
-            pdfDoc = doc;
-            loadingDiv.style.display = 'none';
-            prevButton.style.display = 'flex';
-            nextButton.style.display = 'flex';
-            renderPage(pageNum);
-        }).catch(err => {
-            console.error('Errore:', err);
-            loadingDiv.innerHTML = `
-                <div>❌ Errore nel caricamento del PDF</div>
-                <div style="font-size: 14px; margin-top: 10px;">
-                    Verifica che il file sia presente
-                </div>
-            `;
-        });
+        function loadPDF() {
+            loadingDiv.style.display = 'block';
+            
+            pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
+                pdfDoc = doc;
+                loadingDiv.style.display = 'none';
+                prevButton.style.display = 'flex';
+                nextButton.style.display = 'flex';
+                renderPage(pageNum);
+            }).catch(err => {
+                console.error('Errore:', err);
+                loadingDiv.innerHTML = `
+                    <div>❌ Errore nel caricamento del PDF</div>
+                    <div style="font-size: 14px; margin-top: 10px;">
+                        Verifica che il file sia presente
+                    </div>
+                `;
+            });
+        }
 
-        // Eventi dei pulsanti
         prevButton.addEventListener('click', showPrevPage);
         nextButton.addEventListener('click', showNextPage);
 
-        // Navigazione con frecce della tastiera
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                 showPrevPage();
@@ -280,7 +376,6 @@
             }
         });
 
-        // Ridimensiona quando cambia la finestra
         window.addEventListener('resize', () => {
             if (pdfDoc) {
                 renderPage(pageNum);
