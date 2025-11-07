@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="it" class="h-full bg-gray-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presentazione Lezione AJ56</title>
+    <!-- Caricamento di Tailwind CSS (Richiede Internet) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Stile per la scrollbar nelle note */
+        #presenter-notes::-webkit-scrollbar {
+            width: 8px;
+        }
+        #presenter-notes::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        #presenter-notes::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 4px;
+        }
+        #presenter-notes::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="h-full font-sans antialiased">
+
+    <div class="flex flex-col justify-center items-center h-screen max-h-screen p-4 sm:p-8 bg-gray-100">
+
+        <!-- Colonna Unica: Slide Attuale -->
+        <div class="flex flex-col w-full max-w-6xl h-[85vh] bg-white shadow-2xl rounded-xl overflow-hidden z-10">
+            <header class="p-6 md:p-8 border-b border-gray-200 text-center">
+                <h1 class="text-3xl font-bold text-blue-800">Presentazione Lezione AJ56</h1>
+            </header>
+
+            <!-- Contenitore della Slide -->
+            <div class="flex-1 bg-gray-100 rounded-xl shadow-inner p-6 md:p-8 overflow-y-auto">
+                <h2 id="slide-title" class="text-2xl font-semibold text-gray-900 mb-5"></h2>
+                <div id="slide-content" class="space-y-4 text-lg text-gray-700 leading-relaxed">
+                    <!-- Il contenuto della slide verrà iniettato qui -->
+                </div>
+            </div>
+
+            <!-- Controlli di Navigazione -->
+            <div class="flex justify-between items-center p-6 border-t border-gray-200">
+                <button id="prev-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    &larr; Precedente
+                </button>
+                <span id="slide-counter" class="text-base font-semibold text-gray-700"></span>
+                <button id="next-btn" class="px-5 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition duration-150 disabled:bg-gray-400 disabled:cursor-not-allowed">
+                    Successiva &rarr;
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. DATI DELLE SLIDE ---
+            const slides = [
+                {
+                    title: "Lezione simulata",
+                    noteId: "note-s1",
+                    content: `
+                        <p class="font-bold text-green-500 text-3xl mb-4 text-center">Lezione individuale (anche correlata ad una ulteriore attività di Laboratorio di Musica d’insieme) con allievo con BES (ADHD)</p>
+                        <ul class="list-disc list-inside space-y-3">
+                            <li><strong>Candidato:</strong> salvatore costantino</li>
+                            <li><strong>Classe di Concorso:</strong> AJ56 – Pianoforte (Scuola Secondaria I grado) - allegato 1</li>
+                        </ul>
+                        <div class="mt-6 pt-6 border-t border-gray-300">
+                            <p class="text-xl font-semibold text-blue-700 text-center">Lezione Simulata Lezione:</p>
+                            <p class="text-center text-2xl text-purple-600"><br>Dai Tasti all' ensemble<br>il pianoforte come motore ritmico-armonico in un arrangiamento rock</p>
+                        </div>
+                    `
+                },
+                {
+                    title: "Fase pre-attiva - Analisi del Contesto",
+                    noteId: "note-s2",
+                    content: `
+                        <h4 class="text-xl font-semibold mb-2 text-blue-700">Destinatari:</h4>
+                        <ul class="list-disc list-inside space-y-2 mb-4">
+                            <li><strong>Individuale:</strong> 1 allievo (12 anni, 2ª media) con ADHD (PDP).</li>
+                            <li><strong>Laboratorio:</strong> Gruppo classe (22 studenti, con violino, flauto, clarinetto;).</li>
+                        </ul>
+                        <h4 class="text-xl font-semibold mb-2 text-blue-700">Prerequisiti:</h4>
+                        <ul class="list-disc list-inside space-y-2">
+                            <li><strong>Allievo:</strong> Lettura base, coordinazione elementare, senso ritmico base.</li>
+                            <li><strong>Classe:</strong> Lettura ritmica base, capacità di seguire il docente.</li>
+                        </ul>
+                    `
+                },
+{
+                    title: "Obiettivi - Competenze Trasversali",
+                    noteId: "note-s3-bis", // ID fittizio per coerenza
+                    content: `
+                        <h4 class="text-xl font-semibold mb-4 text-blue-700">Riferimenti Normativi e Competenze Trasversali</h4>
+<h4 class="text-xl font-semibold mb-4 text-green-700">L.170/2010: DSA (PDP) - DM 5669 del 12/07/2011: diritto allo studio studenti con DSA</h4>
+                       
+                        <ul class="list-disc list-inside space-y-4">
+                            <li>
+                                <strong>Indicazioni Nazionali del DM/254 del 2012</strong>
+                            </li>
+                            <li>
+                                <strong>Competenze chiave di cittadinanza DM 139/2007.</strong>
+                            </li>
+                        </ul>
+                    `
+                },
+
+                {
+                    title: "Fase pre-attiva - Obiettivi Formativi",
+                    noteId: "note-s3",
+                    content: `
+                        <p class="text-sm italic mb-4"></p>
+                        
+                        <!-- Contenitore a griglia per i tre riquadri -->
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                            <!-- Riquadro 1: Conoscenze -->
+                            <div class="bg-blue-100 border border-blue-200 p-4 rounded-lg shadow-sm">
+                                <h4 class="text-xl font-semibold mb-3 text-blue-800">Conoscenze</h4>
+                                <ul class="list-disc list-inside space-y-2 text-base">
+                                    <li>Struttura canzone rock (strofa-ritornello).</li>
+                                    <li>Ruolo del piano (base armonica, riff ritmico).</li>
+                                    <li>Uso app musicali</li>
+                                </ul>
+                            </div>
+
+                            <!-- Riquadro 2: Abilità -->
+                            <div class="bg-green-100 border border-green-200 p-4 rounded-lg shadow-sm">
+                                <h4 class="text-xl font-semibold mb-3 text-green-800">Abilità</h4>
+                                <ul class="list-disc list-inside space-y-2 text-base">
+                                    <li>Eseguire la parte.</li>
+                                    <li>Sviluppare un ascolto attivo durante l'esecuzione di gruppo.</li>
+                                    <li>Mantenere il groove nell'ensemble.</li>
+                                </ul>
+                            </div>
+
+                            <!-- Riquadro 3: Competenze -->
+                            <div class="bg-yellow-100 border border-yellow-300 p-4 rounded-lg shadow-sm">
+                                <h4 class="text-xl font-semibold mb-3 text-yellow-800">Competenze</h4>
+                                <ul class="list-disc list-inside space-y-2 text-base">
+                                    <li>Collaborare nel gruppo.</li>
+                                    <li>Gestire l'attenzione (specifico ADHD).</li>
+                                    <li>Esprimersi culturalmente.</li>
+                                    <li>Agire in autonomia.</li>
+                                    <li>Risolvere problemi.</li>
+                                    <li>interpretare informazioni generali.</li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    `
+                },
+                
+                {
+                    title: "Fase attiva - Contenuti e Scelte", // Rinumerata (era 4)
+                    noteId: "note-s4",
+                    content: `
+                        <ul class="list-disc list-inside space-y-3">
+                            <li><strong>Contenuto:</strong> Arrangiamento personale di un brano rock di Vasco Rossi.</li>
+                            <li><strong>Strumentazione:</strong> Pianoforte (allievo), violino, flauto, clarinetto, sezione ritmica.</li>
+                            <li><strong>Perché?</strong> Brano noto, gradito. Struttura chiara. Motore ritmico ideale per "agganciare" l'attenzione dell'allievo ADHD.</li>
+                            <li><strong>Tecnologie Digitali:</strong> LIM (spartito, ascolto guidato); Tablet (App)</li>
+                        </ul>
+                    `
+                },
+                {
+                    title: "Fase attiva - Lezione Individuale (1h) con ADHD", // Rinumerata (era 5)
+                    noteId: "note-s5",
+                    content: `
+                        <p class="text-base italic mb-4">Strategia: Didattica Breve e Multimodale</p>
+                        <ol class="list-decimal list-inside space-y-3">
+                            <li><strong>(10') tecnica pianistica:</strong> Ascolto e assegno nuovi esercizi.</li>
+                            <li><strong>(5') Pausa.</strong></li>
+                            <li><strong>(10') Analisi:</strong> Ascolto originale/arrangiamento.</li>
+                            <li><strong>(5') Pausa.</strong></li>
+                            <li><strong>(15') Azione:</strong> iniziare la lettura a mani separate.</li>
+                            <li><strong>(5') Pausa.</strong></li>
+                            <li><strong>(10') Azione:</strong> focus su parti difficili.</li>
+                        </ol>
+                    `
+                },
+                {
+                    title: "Fase attiva - Laboratorio d'Insieme (1h)", // Rinumerata (era 6)
+                    noteId: "note-s6",
+                    content: `
+                        <p class="text-base italic mb-4">Struttura temporale del Laboratorio (60 minuti)</p>
+                        <ol class="list-decimal list-inside space-y-3">
+                            <li><strong>5’ &rarr;</strong> Accoglienza</li>
+                            <li><strong>10’ &rarr;</strong> Riscaldamento e preparazione</li>
+                            <li><strong>25’ &rarr;</strong> Prima sessione di prove(facendo attenzione sulle parti difficili)</li>
+                            <li><strong>15’ &rarr;</strong> Esecuzione completa del brano</li>
+                            <li><strong>5’ &rarr;</strong> chiusura e compiti da assegnare</li>
+                        </ol>
+                    `
+                },
+                {
+                    title: "Metodologie Innovative",
+                    noteId: "note-s7-bis", // ID fittizio per coerenza
+                    content: `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
+                            <!-- Riquadro 1: flipped classroom -->
+                            <div class="bg-teal-100 border border-teal-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-teal-800 text-center">flipped classroom</h4>
+                            </div>
+
+                            <!-- Riquadro 2: peertopeer -->
+                            <div class="bg-purple-100 border border-purple-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-purple-800 text-center">peertopeer</h4>
+                            </div>
+
+                            <!-- Riquadro 3: cooperative learning -->
+                            <div class="bg-orange-100 border border-orange-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-orange-800 text-center">cooperative learning</h4>
+                            </div>
+
+
+
+
+
+
+                        </div>
+                    `
+                },
+                {
+                    title: "Fase attiva - Misure BES",
+                    noteId: "note-s7",
+                    content: `
+                        <h4 class="text-xl font-semibold mb-2 text-blue-700">Misure per BES:</h4>
+                        <ul class="list-disc list-inside space-y-2">
+<h4 class="text-xl font-semibold mb-4 text-green-700">Legge n. 170/2010 Gli studenti con diagnosi di DSA hanno diritto a fruire di appositi provvedimenti dispensativi e compensativi</h4>
+                            <li><strong>ADHD:</strong> Timer visivo, spartito colorato, app per loop, flessibilità motoria, spartiti semplificati,Pause Brevi e Concordate,Focus sui Successi,Coinvolgimento,Dispensa dalle Prove a Tempo Attivo,Piano Didattico Personalizzato (PDP).</li>
+                            
+                        </ul>
+
+                        <!-- Nuovi riquadri aggiunti -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6">
+                            <!-- Riquadro 1: misure dispensative -->
+                            <div class="bg-blue-100 border border-blue-200 p-6 rounded-lg shadow-sm flex items-center justify-center min-h-[120px]">
+                                <h4 class="text-2xl font-semibold text-blue-800 text-center">misure dispensative</h4>
+                            </div>
+
+                            <!-- Riquadro 2: strumenti compensativi -->
+                            <div class="bg-red-100 border border-red-200 p-6 rounded-lg shadow-sm flex items-center justify-center min-h-[120px]">
+                                <h4 class="text-2xl font-semibold text-red-800 text-center">strumenti compensativi</h4>
+                            </div>
+                        </div>
+
+
+                    `
+                },
+                
+                {
+                    title: "Fase post-attiva - Disseminazione", // Rinumerata (era 9)
+                    noteId: "note-s9",
+                    content: `
+                        <ul class="list-disc list-inside space-y-3">
+                            <li><strong>Documentazione:</strong> Video-registrazione della performance d'insieme.</li>
+                            <li><strong>Socializzazione:</strong> Pubblicazione (con liberatorie) sul blog della scuola.</li>
+                            <li><strong>Obiettivo:</strong> Valorizzare il prodotto e il ruolo dell'allievo (rinforzo autostima).</li>
+                        </ul>
+                    `
+                },
+// --- SLIDE 10 MODIFICATA ---
+                {
+                    title: "Fase post-attiva - Verifica e Valutazione",
+                    noteId: "note-s8",
+                    content: `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10">
+                            <!-- Riquadro 1: Diagnostica -->
+                            <div class="bg-blue-100 border border-blue-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-blue-800 text-center">Diagnostica</h4>
+                            </div>
+
+                            <!-- Riquadro 2: Formativa -->
+                            <div class="bg-green-100 border border-green-200 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-green-800 text-center">Formativa</h4>
+                            </div>
+
+                            <!-- Riquadro 3: Sommativa -->
+                            <div class="bg-yellow-100 border border-yellow-300 p-8 rounded-lg shadow-sm flex items-center justify-center min-h-[150px]">
+                                <h4 class="text-2xl font-semibold text-yellow-800 text-center">Sommativa</h4>
+                            </div>
+                        </div>
+                    `
+                },
+
+
+
+{
+    title: "Fase Post-attiva",
+    noteId: "note-s6", // Ho ipotizzato un nuovo ID, puoi cambiarlo se necessario
+    content: `
+      
+
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="border border-gray-300 p-2">attività</th>
+                    <th class="border border-gray-300 p-2">Per nulla</th>
+                    <th class="border border-gray-300 p-2">Sufficiente</th>
+                    <th class="border border-gray-300 p-2">Giusto</th>
+                    <th class="border border-gray-300 p-2">Più che<br>Giusto</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="border border-gray-300 p-2">ha partecipato</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ha ascoltato gli insegnamenti</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">ha lavorato con impegno</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ha collaborato attivamente nel gruppo</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">In base al punto di partenza è migliorato</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ha suonato il brano</td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                    <td class="border border-gray-300 p-2"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        </div>
+    `
+},
+
+
+
+{
+    title: "Autovalutazione",
+    noteId: "note-s7",
+    content: `
+
+        <table class="w-full border-collapse border border-gray-300">
+            <thead>
+                <tr class="bg-gray-100 text-center">
+                    <th class="border border-gray-300 p-2">Criterio</th>
+                    <th class="border border-gray-300 p-2">Tanto</th>
+                    <th class="border border-gray-300 p-2">Abbastanza</th>
+                    <th class="border border-gray-300 p-2">Poco</th>
+                    <th class="border border-gray-300 p-2">Per niente</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ho trovato interessante questa attività.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio1" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Mi sono sentito a mio agio durante il lavoro.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio2" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Suonare davanti a un pubblico mi ha dato una bella emozione.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio8" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ho potuto contribuire con le mie proposte.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio3" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ho completato gli incarichi che mi sono stati assegnati.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio4" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Ho offerto supporto ai miei compagni quando necessario.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio5" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Sarei felice di partecipare di nuovo a un'attività simile.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio6" value="per_niente"></td>
+                </tr>
+                <tr>
+                    <td class="border border-gray-300 p-2">Sono soddisfatto/a di come ho eseguito il mio brano al pianoforte.</td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="tanto"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="abbastanza"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="poco"></td>
+                    <td class="border border-gray-300 p-2 text-center"><input type="radio" name="criterio7" value="per_niente"></td>
+                </tr>
+            
+            </tbody>
+        </table>
+    `
+},
+
+
+
+
+
+
+
+
+
+
+
+
+
+                {
+                    title: "Conclusione", // Rinumerata (era 10)
+                    noteId: "note-s10",
+                    content: `
+                        <h4 class="text-xl font-semibold mb-2 text-blue-700">Giustificazione Scelte:</h4>
+                        <p class="mb-4">Le sfide dell'ADHD (iperattività, impulsività) sono state trasformate in punti di forza (energia ritmica), attraverso metodologie attive.</p>
+                    `
+                },
+                {
+                    title: "Ringraziamenti",
+                    noteId: "note-s11",
+                    content: `
+                        <div class="text-center space-y-6 pt-10">
+                            <h3 class="text-3xl font-semibold text-blue-700">Grazie per l'attenzione</h3>
+                            <p class="text-xl">
+                                Ringrazio la Commissione e tutti i presenti per aver ascoltato.
+                            </p>
+                            <p class="text-xl">
+                                Un ringraziamento speciale alla mia Tutor e a tutti i Professori per il prezioso lavoro svolto durante questo corso.
+                            </p> <!-- ERRORE CORRETTO QUI (era </Ci>) -->
+                        </div>
+                    `
+                }
+            ];
+
+            // --- 2. RIFERIMENTI DOM ---
+            const slideTitleEl = document.getElementById('slide-title');
+            const slideContentEl = document.getElementById('slide-content');
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const slideCounterEl = document.getElementById('slide-counter');
+            
+            let currentSlide = 0;
+
+            // --- 3. FUNZIONE DI RENDER ---
+            function renderSlide(slideIndex) {
+                // Prende i dati della slide corrente
+                const slide = slides[slideIndex];
+
+                // Aggiorna il contenuto della slide
+                slideTitleEl.innerHTML = slide.title;
+                slideContentEl.innerHTML = slide.content;
+
+                // Aggiungi text-center per la slide 1 (index 0) e 8 (index 7)
+                if (slideIndex === 0 || slideIndex === 7) {
+                    slideTitleEl.classList.add('text-center');
+                } else {
+                    slideTitleEl.classList.remove('text-center');
+                }
+
+                // Aggiorna il contatore
+                slideCounterEl.textContent = `Slide ${slideIndex + 1} di ${slides.length}`;
+
+                // Aggiorna lo stato dei bottoni
+                prevBtn.disabled = slideIndex === 0;
+                nextBtn.disabled = slideIndex === slides.length - 1;
+            }
+
+            // --- 4. FUNZIONI DI NAVIGAZIONE ---
+            function showNextSlide() {
+                if (currentSlide < slides.length - 1) {
+                    currentSlide++;
+                    renderSlide(currentSlide);
+                }
+            }
+
+            function showPrevSlide() {
+                if (currentSlide > 0) {
+                    currentSlide--;
+                    renderSlide(currentSlide);
+                }
+            }
+            // ERRORE CORRETTO QUI (rimossa la 'L' vagante)
+
+            // --- 5. EVENT LISTENERS ---
+            
+            // Click sui bottoni
+            nextBtn.addEventListener('click', showNextSlide);
+            prevBtn.addEventListener('click', showPrevSlide);
+
+            // Navigazione da tastiera
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight') {
+                    showNextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    showPrevSlide();
+                }
+            });
+
+            // --- 6. INIZIALIZZAZIONE ---
+            // Mostra la prima slide al caricamento
+            renderSlide(currentSlide);
+        });
+    </script>
+</body>
+</html>
+
