@@ -3,54 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentazione</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pptx.js/0.1.2/pptxjs.css">
+    <title>Presentazione PDF</title>
     <style>
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            overflow: hidden;
+            box-sizing: border-box;
         }
-        #presentation-container {
+
+        body, html {
             width: 100%;
             height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: Arial, sans-serif;
+        }
+
+        #pdf-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+
+        #pdf-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .nav-button {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            border: none;
+            width: 60px;
+            height: 60px;
+            font-size: 30px;
+            cursor: pointer;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            color: #333;
+        }
+
+        .nav-button:hover {
+            background-color: rgba(255, 255, 255, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        #prev-button {
+            left: 20px;
+        }
+
+        #next-button {
+            right: 20px;
+        }
+
+        #page-info {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            color: #333;
+            z-index: 1000;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        #loading {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            z-index: 999;
         }
     </style>
 </head>
 <body>
 
-    <div id="presentation-container"></div>
+    <div id="loading">Caricamento...</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pptx.js/0.1.2/pptxjs.js"></script>
-    <script>
-        $(document).ready(function() {
-            $("#presentation-container").pptxToHtml({
-                pptxFileUrl: "prova-orale-60-CFA-salvatore-costantino.pptx",
-                fileInputId: "",
-                slideMode: true,
-                keyBoardShortCut: true,
-                mediaProcess: true, 
-                slideModeConfig: {
-                    first: 1,
-                    nav: false, 
-                    navTxtColor: "white", 
-                    navNextTxt: "&#8250;", 
-                    navPrevTxt: "&#8249;",
-                    showPlayPauseBtn: false,
-                    keyBoardShortCut: false, 
-                    showSlideNum: true,
-                    showTotalSlideNum: true,
-                    autoSlide: false, 
-                    randomAutoSlide: false, 
-                    loop: false, 
-                    background: "black",
-                    transition: "default",
-                    transitionTime: 500
-                }
+    <div id="pdf-container">
+        nvasvas id="pdf-canvas"></canvas>
+    </div>
+
+    <button id="prev-button" class="nav-button">&#8249;</button>
+    <button id="next-button" class="nav-button">&#8250;</button>
+
+    <div id="page-info">
+        <span id="page-num">1</span> / <span id="page-count">-</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/[email protected]/build/pdf.min.mjs" type="module"></script>
+    
+    <script type="module">
+        // Importa PDF.js
+        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+        // Configura il worker
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/[email protected]/build/pdf.worker.min.mjs';
+
+        // Nome del file PDF (deve essere nella stessa cartella)
+        const pdfUrl = 'prova-orale-60-CFA-salvatore-costantino.pdf';
+
+        let pdfDoc = null;
+        let pageNum = 1;
+        let pageIsRendering = false;
+        let pageNumIsPending = null;
+
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+        const loadingDiv = document.getElementById('loading');
+
+        // Renderizza la pagina
+        function renderPage(num) {
+            pageIsRendering = true;
+
+            pdfDoc.getPage(num).then(page => {
+                // Calcola la scala per adattare alla finestra
+                const viewport = page.getViewport({ scale: 1 });
+                const windowWidth = window.innerWidth;
+                const windowHeight = window.innerHeight - 100;
+                
+                const scaleX = windowWidth / viewport.width;
+                const scaleY = windowHeight / viewport.height;
+                const scale = Math.min(scaleX, scaleY);
+
+                const scaledViewport = page.getViewport({ scale: scale });
+
+                canvas.height = scaledViewport.height;
+                canvas.width = scaledViewport.width;
+
+                const renderContext = {
+                    canvasContext: ctx,
+                    viewport: scaledViewport
+                };
+
+                page.render(renderContext).promise.then(() => {
+                    pageIsRendering = false;
+
+                    if (pageNumIsPending !== null) {
+                        renderPage(pageNumIsPending);
+                        pageNumIsPending = null;
+                    }
+
+                    updatePageInfo();
+                    updateButtons();
+                });
             });
+        }
+
+        // Aggiorna le informazioni sulla pagina
+        function updatePageInfo() {
+            document.getElementById('page-num').textContent = pageNum;
+        }
+
+        // Aggiorna lo stato dei pulsanti
+        function updateButtons() {
+            document.getElementById('prev-button').disabled = pageNum <= 1;
+            document.getElementById('next-button').disabled = pageNum >= pdfDoc.numPages;
+        }
+
+        // Pagina precedente
+        function showPrevPage() {
+            if (pageNum <= 1) return;
+            pageNum--;
+            queueRenderPage(pageNum);
+        }
+
+        // Pagina successiva
+        function showNextPage() {
+            if (pageNum >= pdfDoc.numPages) return;
+            pageNum++;
+            queueRenderPage(pageNum);
+        }
+
+        // Metti in coda il rendering
+        function queueRenderPage(num) {
+            if (pageIsRendering) {
+                pageNumIsPending = num;
+            } else {
+                renderPage(num);
+            }
+        }
+
+        // Carica il PDF
+        pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
+            pdfDoc = doc;
+            document.getElementById('page-count').textContent = pdfDoc.numPages;
+            loadingDiv.style.display = 'none';
+            renderPage(pageNum);
+        }).catch(err => {
+            console.error('Errore nel caricamento del PDF:', err);
+            loadingDiv.textContent = 'Errore nel caricamento del PDF. Assicurati che il file esista.';
+        });
+
+        // Eventi dei pulsanti
+        document.getElementById('prev-button').addEventListener('click', showPrevPage);
+        document.getElementById('next-button').addEventListener('click', showNextPage);
+
+        // Supporto per le frecce della tastiera
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                showPrevPage();
+            } else if (e.key === 'ArrowRight') {
+                showNextPage();
+            }
+        });
+
+        // Ridimensiona il canvas quando la finestra viene ridimensionata
+        window.addEventListener('resize', () => {
+            if (pdfDoc) {
+                renderPage(pageNum);
+            }
         });
     </script>
 
