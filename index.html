@@ -28,36 +28,46 @@
     <!-- Schermata Password -->
     <div id="password-screen" class="fixed inset-0 bg-gray-800 bg-opacity-90 flex justify-center items-center z-50 p-4">
         <div class="bg-white w-full max-w-sm p-6 sm:p-8 rounded-xl shadow-2xl text-center">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Lezione Simulata AJ56 - all1</h2>
-            <p class="text-gray-600 mb-6">Accesso consentito a<br>Salvatore Costantino<br>Slide e contenuto html.</p>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Accesso Richiesto</h2>
+            <p class="text-gray-600 mb-6">Inserisci la password per visualizzare la lezione.</p>
             
             <input type="password" id="password-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Password...">
             <p id="password-error" class="text-red-600 text-sm mt-3 h-5"></p> <!-- Spazio per errore -->
             <button id="password-submit" class="w-full bg-blue-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 transition duration-150 mt-4">
                 Entra
             </button>
-
-
-
-
-
-<!-- --- PULSANTE PDF AGGIUNTO --- -->
-            <a href="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf"
-               download
-               class="block w-full bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-150 mt-4 text-center no-underline">
+            
+            <!-- --- PULSANTE PDF MODIFICATO (da <a> a <button>) --- -->
+            <button id="pdf-download-btn"
+               data-pdf-url="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf"
+               class="w-full bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-150 mt-4 text-center">
                 Lezione PDF
-            </a>
+            </button>
             <!-- --- FINE PULSANTE PDF --- -->
 
-
-
-
-
-
-
-
-
+            
         </div>
+        
+        <!-- --- MODALE PASSWORD PDF AGGIUNTO --- -->
+        <div id="pdf-password-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50 p-4 hidden">
+            <div class="bg-white w-full max-w-sm p-6 sm:p-8 rounded-xl shadow-2xl text-center relative">
+                <!-- Pulsante Chiudi -->
+                <button id="pdf-modal-close-btn" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                
+                <h3 class="text-2xl font-bold text-gray-800 mb-4">Password PDF Richiesta</h3>
+                <p class="text-gray-600 mb-6">Inserisci la password per scaricare il PDF.</p>
+                
+                <input type="password" id="pdf-password-input" class="w-full px-4 py-3 border border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Password...">
+                <p id="pdf-password-error" class="text-red-600 text-sm mt-3 h-5"></p> <!-- Spazio per errore -->
+                
+                <button id="pdf-password-submit" class="w-full bg-green-600 text-white text-lg font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-green-700 transition duration-150 mt-4">
+                    Conferma e Scarica
+                </button>
+            </div>
+        </div>
+        <!-- --- FINE MODALE --- -->
     </div>
 
     <!-- Contenuto Principale (nascosto di default) -->
@@ -94,7 +104,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- RIFERIMENTI DOM PER PASSWORD ---
+            // --- RIFERIMENTI DOM PER PASSWORD --- (CORRETTI)
             const passwordScreen = document.getElementById('password-screen');
             const passwordInput = document.getElementById('password-input');
             const passwordSubmit = document.getElementById('password-submit');
@@ -588,6 +598,70 @@
                 }
             });
             
+
+            // --- LOGICA MODALE PDF AGGIUNTA ---
+            const pdfDownloadBtn = document.getElementById('pdf-download-btn');
+            const pdfModal = document.getElementById('pdf-password-modal');
+            const pdfModalCloseBtn = document.getElementById('pdf-modal-close-btn');
+            const pdfPasswordInput = document.getElementById('pdf-password-input');
+            const pdfPasswordSubmit = document.getElementById('pdf-password-submit');
+            const pdfPasswordError = document.getElementById('pdf-password-error');
+            const pdfUrl = pdfDownloadBtn.getAttribute('data-pdf-url');
+
+            // Apri modale
+            pdfDownloadBtn.addEventListener('click', () => {
+                pdfModal.classList.remove('hidden');
+                pdfPasswordInput.value = "";
+                pdfPasswordError.textContent = "";
+                pdfPasswordInput.focus();
+            });
+
+            // Chiudi modale (X)
+            pdfModalCloseBtn.addEventListener('click', () => {
+                pdfModal.classList.add('hidden');
+            });
+
+            // Chiudi modale (click esterno)
+            pdfModal.addEventListener('click', (e) => {
+                if (e.target === pdfModal) {
+                    pdfModal.classList.add('hidden');
+                }
+            });
+
+            // Submit password modale
+            const handlePdfSubmit = () => {
+                const enteredPassword = pdfPasswordInput.value;
+                if (enteredPassword === correctPassword) {
+                    // Password corretta
+                    pdfModal.classList.add('hidden');
+                    
+                    // Avvia download
+                    const link = document.createElement('a');
+                    link.href = pdfUrl;
+                    link.setAttribute('download', 'Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf'); // Nome file suggerito
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+
+                } else {
+                    // Password errata
+                    pdfPasswordError.textContent = "Password errata. Riprova.";
+                    pdfPasswordInput.value = "";
+                    pdfPasswordInput.focus();
+                }
+            };
+
+            pdfPasswordSubmit.addEventListener('click', handlePdfSubmit);
+            pdfPasswordInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    handlePdfSubmit();
+                } else if (pdfPasswordError.textContent) {
+                    pdfPasswordError.textContent = "";
+                }
+            });
+            // --- FINE LOGICA MODALE PDF ---
+
+
             // Imposta il focus sull'input all'avvio
             passwordInput.focus();
         });
