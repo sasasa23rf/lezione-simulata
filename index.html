@@ -389,11 +389,21 @@
         prevButton.addEventListener('click', showPrevPage);
         nextButton.addEventListener('click', showNextPage);
 
+        // Audio per i tasti P e S
+        const audioP = new Audio('suonodiprova.mp3');
+        const audioS = new Audio('suonistrumenti.mp3');
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                 showPrevPage();
             } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
                 showNextPage();
+            } else if (e.key === 'p' || e.key === 'P') {
+                audioP.currentTime = 0;
+                audioP.play();
+            } else if (e.key === 's' || e.key === 'S') {
+                audioS.currentTime = 0;
+                audioS.play();
             }
         });
 
