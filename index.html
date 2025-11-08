@@ -378,7 +378,7 @@
                 // Fade out graduale dell'audio
                 const fadeOutInterval = setInterval(() => {
                     if (audioAttesa.volume > 0.1) {
-                        audioAttesa.volume -= 0.1;
+                        audioAttesa.volume -= 0.02;
                     } else {
                         audioAttesa.pause();
                         audioAttesa.currentTime = 0;
