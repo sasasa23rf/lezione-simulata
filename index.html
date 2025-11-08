@@ -374,8 +374,19 @@
             pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
                 pdfDoc = doc;
                 loadingDiv.style.display = 'none';
-                audioAttesa.pause();
-                audioAttesa.currentTime = 0;
+                
+                // Fade out graduale dell'audio
+                const fadeOutInterval = setInterval(() => {
+                    if (audioAttesa.volume > 0.1) {
+                        audioAttesa.volume -= 0.1;
+                    } else {
+                        audioAttesa.pause();
+                        audioAttesa.currentTime = 0;
+                        audioAttesa.volume = 1.0;
+                        clearInterval(fadeOutInterval);
+                    }
+                }, 100);
+                
                 prevButton.style.display = 'flex';
                 nextButton.style.display = 'flex';
                 renderPage(pageNum);
