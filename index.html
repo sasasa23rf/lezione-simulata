@@ -240,6 +240,8 @@
             if (enteredPassword === correctPassword) {
                 // Password corretta: nascondi il modal e carica il PDF
                 passwordModal.style.display = 'none';
+                // Avvia l'audio di attesa prima di caricare il PDF
+                audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
                 loadPDF();
             } else {
                 // Password errata: mostra errore
@@ -372,11 +374,15 @@
             pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
                 pdfDoc = doc;
                 loadingDiv.style.display = 'none';
+                audioAttesa.pause();
+                audioAttesa.currentTime = 0;
                 prevButton.style.display = 'flex';
                 nextButton.style.display = 'flex';
                 renderPage(pageNum);
             }).catch(err => {
                 console.error('Errore:', err);
+                audioAttesa.pause();
+                audioAttesa.currentTime = 0;
                 loadingDiv.innerHTML = `
                     <div>❌ Errore nel caricamento del PDF</div>
                     <div style="font-size: 14px; margin-top: 10px;">
