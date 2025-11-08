@@ -405,6 +405,10 @@
                 audioS.currentTime = 0;
                 audioS.play();
             }
+            } else if (e.key === ' ') {
+                audioP.pause();
+                audioS.pause();
+            }
         });
 
         window.addEventListener('resize', () => {
