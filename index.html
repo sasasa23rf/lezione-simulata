@@ -404,10 +404,12 @@
             } else if (e.key === 's' || e.key === 'S') {
                 audioS.currentTime = 0;
                 audioS.play();
-            }
-            } else if (e.key === 'q') {
+            } else if (e.code === 'Space' || e.keyCode === 32) {
+                e.preventDefault();
                 audioP.pause();
+                audioP.currentTime = 0;
                 audioS.pause();
+                audioS.currentTime = 0;
             }
         });
 
