@@ -205,7 +205,8 @@
                 <button type="submit" id="password-submit">Accedi</button>
                 <div id="password-error">❌ Password errata. Riprova.</div>
             </form>
-            <a href="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf" id="download-btn" target="_blank">
+            <!-- MODIFICA: Rimosso href e target, aggiunto data-url -->
+            <a href="#" data-url="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf" id="download-btn">
                 Scarica PDF Lezione Simulata
             </a>
         </div>
@@ -232,17 +233,27 @@
         const passwordForm = document.getElementById('password-form');
         const passwordInput = document.getElementById('password-input');
         const passwordError = document.getElementById('password-error');
+        
+        let passwordAction = 'view'; // Flag per distinguere 'view' o 'download'
 
         passwordForm.addEventListener('submit', function(e) {
             e.preventDefault();
             const enteredPassword = passwordInput.value;
 
             if (enteredPassword === correctPassword) {
-                // Password corretta: nascondi il modal e carica il PDF
+                // Password corretta: nascondi il modal
                 passwordModal.style.display = 'none';
-                // Avvia l'audio di attesa prima di caricare il PDF
-                audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
-                loadPDF();
+                
+                if (passwordAction === 'view') {
+                    // Azione: Visualizza PDF
+                    audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
+                    loadPDF();
+                } else if (passwordAction === 'download') {
+                    // Azione: Scarica PDF
+                    const downloadUrl = downloadBtn.getAttribute('data-url');
+                    window.open(downloadUrl, '_blank');
+                    passwordAction = 'view'; // Resetta l'azione al default
+                }
             } else {
                 // Password errata: mostra errore
                 passwordError.style.display = 'block';
@@ -255,6 +266,21 @@
                 }, 3000);
             }
         });
+
+        // MODIFICA: Aggiunto event listener per il pulsante di download
+        const downloadBtn = document.getElementById('download-btn');
+        
+        downloadBtn.addEventListener('click', function(e) {
+            e.preventDefault(); // Impedisce al link '#' di funzionare
+            
+            // Imposta l'azione su 'download' e mostra il modal
+            passwordAction = 'download';
+            passwordModal.style.display = 'flex';
+            passwordError.style.display = 'none'; // Nascondi errori precedenti
+            passwordInput.value = ''; // Svuota l'input
+            passwordInput.focus(); // Metti il focus
+        });
+
 
         // Configura PDF.js
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
