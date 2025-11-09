@@ -240,6 +240,10 @@
     <button id="prev-button" class="nav-button" style="display:none;">&#8249;</button>
     <button id="next-button" class="nav-button" style="display:none;">&#8250;</button>
 
+    <div id="image-overlay">
+        <img src="" alt="">
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     
     <script>
@@ -449,6 +453,19 @@
         const audioS = new Audio('suonistrumenti.mp3');
         const audioAttesa = new Audio('attesa.mp3');
 
+        // Gestione immagine overlay
+        const imageOverlay = document.getElementById('image-overlay');
+        const overlayImg = imageOverlay.querySelector('img');
+
+        function showImage(imageSrc) {
+            overlayImg.src = imageSrc;
+            imageOverlay.style.display = 'flex';
+            
+            setTimeout(() => {
+                imageOverlay.style.display = 'none';
+            }, 1000);
+        }
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
                 showPrevPage();
@@ -460,6 +477,10 @@
             } else if (e.key === 's' || e.key === 'S') {
                 audioS.currentTime = 0;
                 audioS.play();
+            } else if (e.key === '1') {
+                showImage('1.jpg');
+            } else if (e.key === '2') {
+                showImage('2.jpg');
             } else if (e.code === 'Space' || e.keyCode === 32) {
                 e.preventDefault();
                 audioP.pause();
