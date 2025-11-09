@@ -91,8 +91,6 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            text-decoration: none;
-            display: inline-block;
         }
 
         #download-btn:hover {
@@ -203,12 +201,11 @@
             <form id="password-form">
                 <input type="password" id="password-input" placeholder="Password" autocomplete="off" autofocus>
                 <button type="submit" id="password-submit">Accedi</button>
-                <div id="password-error">❌ Password errata. Riprova.</div>
+                <div id="password-error">⚠ Password errata. Riprova.</div>
             </form>
-            <!-- MODIFICA: Rimosso href e target, aggiunto data-url -->
-            <a href="#" data-url="https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf" id="download-btn">
+            <button id="download-btn" type="button">
                 Scarica PDF Lezione Simulata
-            </a>
+            </button>
         </div>
     </div>
 
@@ -233,27 +230,15 @@
         const passwordForm = document.getElementById('password-form');
         const passwordInput = document.getElementById('password-input');
         const passwordError = document.getElementById('password-error');
-        
-        let passwordAction = 'view'; // Flag per distinguere 'view' o 'download'
+        const downloadBtn = document.getElementById('download-btn');
 
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
+        // Gestione click sul pulsante download
+        downloadBtn.addEventListener('click', function() {
             const enteredPassword = passwordInput.value;
 
             if (enteredPassword === correctPassword) {
-                // Password corretta: nascondi il modal
-                passwordModal.style.display = 'none';
-                
-                if (passwordAction === 'view') {
-                    // Azione: Visualizza PDF
-                    audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
-                    loadPDF();
-                } else if (passwordAction === 'download') {
-                    // Azione: Scarica PDF
-                    const downloadUrl = downloadBtn.getAttribute('data-url');
-                    window.open(downloadUrl, '_blank');
-                    passwordAction = 'view'; // Resetta l'azione al default
-                }
+                // Password corretta: avvia il download
+                window.open('https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/Lezione.simulata.Salvatore.Costantino.AJ56.allegato.1.pdf', '_blank');
             } else {
                 // Password errata: mostra errore
                 passwordError.style.display = 'block';
@@ -267,20 +252,28 @@
             }
         });
 
-        // MODIFICA: Aggiunto event listener per il pulsante di download
-        const downloadBtn = document.getElementById('download-btn');
-        
-        downloadBtn.addEventListener('click', function(e) {
-            e.preventDefault(); // Impedisce al link '#' di funzionare
-            
-            // Imposta l'azione su 'download' e mostra il modal
-            passwordAction = 'download';
-            passwordModal.style.display = 'flex';
-            passwordError.style.display = 'none'; // Nascondi errori precedenti
-            passwordInput.value = ''; // Svuota l'input
-            passwordInput.focus(); // Metti il focus
-        });
+        passwordForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const enteredPassword = passwordInput.value;
 
+            if (enteredPassword === correctPassword) {
+                // Password corretta: nascondi il modal e carica il PDF
+                passwordModal.style.display = 'none';
+                // Avvia l'audio di attesa prima di caricare il PDF
+                audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
+                loadPDF();
+            } else {
+                // Password errata: mostra errore
+                passwordError.style.display = 'block';
+                passwordInput.value = '';
+                passwordInput.focus();
+                
+                // Nascondi errore dopo 3 secondi
+                setTimeout(() => {
+                    passwordError.style.display = 'none';
+                }, 3000);
+            }
+        });
 
         // Configura PDF.js
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -421,7 +414,7 @@
                 audioAttesa.pause();
                 audioAttesa.currentTime = 0;
                 loadingDiv.innerHTML = `
-                    <div>❌ Errore nel caricamento del PDF</div>
+                    <div>⚠ Errore nel caricamento del PDF</div>
                     <div style="font-size: 14px; margin-top: 10px;">
                         Verifica che il file sia presente
                     </div>
