@@ -452,6 +452,7 @@
         const audioP = new Audio('suonodiprova.mp3');
         const audioS = new Audio('suonistrumenti.mp3');
         const audioAttesa = new Audio('attesa.mp3');
+        const audioT = new Audio('schumann.mp3');
 
         // Gestione immagine overlay
         const imageOverlay = document.getElementById('image-overlay');
@@ -478,8 +479,8 @@
                 audioS.currentTime = 0;
                 audioS.play();
                  } else if (e.key === 't' || e.key === 'T') {
-                schumann.currentTime = 0;
-                schumann.play();
+                audioS.currentTime = 0;
+                audioS.play();
             } else if (e.key === '1') {
                 showImage('1.jpg');
             } else if (e.key === '2') {
