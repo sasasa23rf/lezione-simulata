@@ -483,6 +483,7 @@
         const audioS = new Audio('suonistrumenti.mp3');
         const audioAttesa = new Audio('attesa.mp3');
         const audioT = new Audio('Schumann.mp3');
+        const audioO = new Audio('Arrangiamento.mp3');
 
         // Gestione immagine overlay
         const imageOverlay = document.getElementById('image-overlay');
@@ -515,6 +516,9 @@
             } else if (e.key === 't' || e.key === 'T') {
                 audioT.currentTime = 0;
                 audioT.play();
+            } else if (e.key === 'o' || e.key === 'O') {
+                audioO.currentTime = 0;
+                audioO.play();
             } else if (e.key === '1') {
                 showImage('1.jpg');
             } else if (e.key === '2') {
@@ -546,6 +550,8 @@
                 audioS.currentTime = 0;
                 audioT.pause();
                 audioT.currentTime = 0;
+                audioO.pause();
+                audioO.currentTime = 0;
 
                 // Stop e chiusura video (Aggiunto)
                 if (videoOverlay.style.display === 'flex') {
