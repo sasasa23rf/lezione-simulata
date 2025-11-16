@@ -497,9 +497,12 @@
             overlayImg.src = imageSrc;
             imageOverlay.style.display = 'flex';
             
+            // MODIFICA: Rimosso il setTimeout per far rimanere l'immagine fissa
+            /*
             setTimeout(() => {
                 imageOverlay.style.display = 'none';
             }, 3500);
+            */
         }
 
         document.addEventListener('keydown', (e) => {
@@ -558,6 +561,11 @@
                     tutorialVideo.pause();
                     tutorialVideo.currentTime = 0;
                     videoOverlay.style.display = 'none';
+                }
+
+                // MODIFICA: Aggiunto controllo per chiudere l'overlay dell'immagine
+                if (imageOverlay.style.display === 'flex') {
+                    imageOverlay.style.display = 'none';
                 }
             }
         });
