@@ -208,6 +208,28 @@
             max-height: 70%;
             object-fit: contain;
         }
+
+        /* Stile per Video Overlay (Aggiunto) */
+        #video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none; /* Nascosto di default */
+            justify-content: center;
+            align-items: center;
+            z-index: 10001; /* Sopra image-overlay */
+        }
+
+        #tutorial-video {
+            width: 70vw; /* 70% larghezza viewport */
+            height: 70vh; /* 70% altezza viewport */
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain; /* Mantiene proporzioni */
+        }
     </style>
 </head>
 <body>
@@ -242,6 +264,14 @@
 
     <div id="image-overlay">
         <img src="" alt="">
+    </div>
+
+    <!-- Contenitore Video (Aggiunto) -->
+    <div id="video-overlay">
+        <video id="tutorial-video" controls>
+            <source src="tutorial.mp4" type="video/mp4">
+            Il tuo browser non supporta il tag video.
+        </video>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -458,6 +488,10 @@
         const imageOverlay = document.getElementById('image-overlay');
         const overlayImg = imageOverlay.querySelector('img');
 
+        // Gestione Video Overlay (Aggiunto)
+        const videoOverlay = document.getElementById('video-overlay');
+        const tutorialVideo = document.getElementById('tutorial-video');
+
         function showImage(imageSrc) {
             overlayImg.src = imageSrc;
             imageOverlay.style.display = 'flex';
@@ -499,6 +533,11 @@
                 showImage('8.jpg');
                  } else if (e.key === '9') {
                 showImage('9.jpg');
+            // Logica Video (Aggiunta)
+            } else if (e.key === 'y' || e.key === 'Y') {
+                videoOverlay.style.display = 'flex';
+                tutorialVideo.currentTime = 0;
+                tutorialVideo.play();
             } else if (e.code === 'Space' || e.keyCode === 32) {
                 e.preventDefault();
                 audioP.pause();
@@ -507,6 +546,23 @@
                 audioS.currentTime = 0;
                 audioT.pause();
                 audioT.currentTime = 0;
+
+                // Stop e chiusura video (Aggiunto)
+                if (videoOverlay.style.display === 'flex') {
+                    tutorialVideo.pause();
+                    tutorialVideo.currentTime = 0;
+                    videoOverlay.style.display = 'none';
+                }
+            }
+        });
+
+        // Click per chiudere Video Overlay (Aggiunto)
+        videoOverlay.addEventListener('click', (e) => {
+            // Chiudi solo se si clicca sullo sfondo (overlay) e non sul video stesso
+            if (e.target === videoOverlay) {
+                videoOverlay.style.display = 'none';
+                tutorialVideo.pause();
+                tutorialVideo.currentTime = 0;
             }
         });
 
