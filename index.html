@@ -2,589 +2,438 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Presentazione PDF</title>
+    <title>Stream RPi Schermo Intero</title>
     <style>
-        * {
+        /* RESET BASE */
+        body, html {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-        }
-
-        body, html {
             width: 100%;
             height: 100%;
-            overflow: hidden;
-            background-color: #fff;
-            font-family: Arial, sans-serif;
+            overflow: hidden; 
+            background-color: #000; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
-        /* Password Modal */
-        #password-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-
-        #password-box {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        #password-box h2 {
-            margin-bottom: 20px;
-            color: #333;
-            font-size: 24px;
-        }
-
-        #password-input {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            margin-bottom: 10px;
-            outline: none;
-            transition: border-color 0.3s;
-        }
-
-        #password-input:focus {
-            border-color: #4CAF50;
-        }
-
-        #password-submit {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 10px;
-        }
-
-        #password-submit:hover {
-            background-color: #45a049;
-        }
-
-        #download-btn {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            background-color: #2196F3;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        #download-btn:hover {
-            background-color: #0b7dda;
-        }
-
-        #password-error {
-            color: #f44336;
-            margin-top: 10px;
-            font-size: 14px;
-            display: none;
-        }
-
-        /* PDF Viewer */
-        #pdf-container {
+        
+        #video-container {
             width: 100%;
             height: 100%;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #fff;
+            justify-content: center; 
+            align-items: center; 
             position: relative;
         }
 
-        #pdf-viewer {
-            position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-
-        #pdf-canvas {
+        #stream {
+            object-fit: contain; 
+            width: 100%;
+            height: 100%;
             display: block;
         }
 
-        #annotation-layer {
+        /* ELEMENTI OVERLAY */
+        .overlay-element {
             position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        #annotation-layer a {
-            position: absolute;
-            cursor: pointer;
-        }
-
-        .nav-button {
-            position: fixed;
-            bottom: 20px;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: none;
-            width: 60px;
-            height: 60px;
-            font-size: 30px;
-            cursor: pointer;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 10px 18px; 
+            font-weight: bold;
+            border-radius: 12px; 
+            z-index: 20; 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
             transition: all 0.3s ease;
-            z-index: 1000;
-            color: #fff;
         }
 
-        .nav-button:hover {
-            background-color: rgba(0, 0, 0, 0.9);
-            transform: scale(1.1);
-        }
-
-        .nav-button:active {
-            transform: scale(0.95);
-        }
-
-        #prev-button {
-            left: 20px;
-        }
-
-        #next-button {
-            right: 20px;
-        }
-
-        .nav-button:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        #loading {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #333;
-            font-size: 20px;
-            z-index: 999;
-            text-align: center;
-            padding: 20px;
-            display: none;
-        }
-
-        #image-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-        }
-
-        #image-overlay img {
-            max-width: 70%;
-            max-height: 70%;
-            object-fit: contain;
-        }
-
-        /* Stile per Video Overlay (Aggiunto) */
-        #video-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
+        .top-right { top: 15px; right: 15px; }
+        .top-left { top: 15px; left: 15px; }
+        .bottom-left { bottom: 15px; left: 15px; }
+        
+        /* POSIZIONE DEL MONITOR VELOCITÀ (Sotto il pulsante Wakeup o accanto) */
+        .top-right-info {
+            top: 70px; /* Un po' più in basso rispetto al pulsante Start */
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #00e5ff; /* Ciano stile cyberpunk */
+            font-family: 'Consolas', monospace;
+            font-size: 12px;
+            border: 1px solid rgba(0, 229, 255, 0.3);
             display: none; /* Nascosto di default */
-            justify-content: center;
-            align-items: center;
-            z-index: 10001; /* Sopra image-overlay */
+            text-align: right;
+            min-width: 120px;
         }
 
-        #tutorial-video {
-            width: 70vw; /* 70% larghezza viewport */
-            height: 70vh; /* 70% altezza viewport */
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain; /* Mantiene proporzioni */
+        /* PULSANTI */
+        button.overlay-element {
+            background-color: #4CAF50; 
+            color: white;
+            border: none; 
+            cursor: pointer;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        button.overlay-element:hover {
+            background-color: #45A049; 
+            transform: translateY(-2px); 
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
+        }
+        button.overlay-element:disabled {
+            background-color: #888;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        #status-overlay {
+            background-color: rgba(20, 20, 20, 0.8);
+            color: white;
+            font-size: 13px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        #quality-button {
+            background-color: #2196F3; 
+            color: white;
+            z-index: 30; 
+        }
+        #quality-button:hover {
+            background-color: #1976D2;
+        }
+
+        /* MENU IMPOSTAZIONI */
+        #settings-menu {
+            position: absolute;
+            bottom: -450px; /* Nascosto */
+            left: 15px;
+            width: 280px;
+            background-color: rgba(30, 30, 30, 0.95);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+            z-index: 25; 
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        #settings-menu.active {
+            bottom: 70px; 
+        }
+
+        h3 {
+            margin-top: 0; 
+            font-size: 16px; 
+            border-bottom: 1px solid #555; 
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .control-group label {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+        }
+        .control-group span {
+            float: right;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        
+        /* Toggle Switch Style per la checkbox */
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #444;
+        }
+        .toggle-row label {
+            font-size: 14px;
+            color: white;
+            margin: 0;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #4CAF50;
+            cursor: pointer;
+        }
+
+        input[type=range] {
+            width: 100%;
+            accent-color: #2196F3;
+            cursor: pointer;
+            height: 5px;
+            background: #555;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            background: #444;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
     </style>
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 </head>
 <body>
 
-    <!-- Password Modal -->
-    <div id="password-modal">
-        <div id="password-box">
-            <h2>Salvatore Costantino</h2>
-            <p style="color: #666; margin-bottom: 20px;">Lezione Simulata<br>17/11/2025</p>
-            <form id="password-form">
-                <input type="password" id="password-input" placeholder="Password" autocomplete="off" autofocus>
-                <button type="submit" id="password-submit">Accedi</button>
-                <div id="password-error">⚠ Password errata. Riprova.</div>
-            </form>
-            <button id="download-btn" type="button">
-                Scarica PDF Lezione Simulata
-            </button>
+    <div id="video-container">
+        <img id="stream" src="" alt="In attesa del video...">
+    </div>
+
+    <!-- STATUS (Top Left) -->
+    <div id="status-overlay" class="overlay-element top-left">
+        Stato: <span id="status" style="color: orange;">Disconnesso</span>
+    </div>
+
+    <!-- WAKE UP BUTTON (Top Right) -->
+    <button id="wakeup-button" class="overlay-element top-right">
+        ⚡ Avvia Server
+    </button>
+
+    <!-- SPEED MONITOR DISPLAY (Top Right - Sotto il pulsante) -->
+    <div id="speed-display" class="overlay-element top-right-info">
+        <div>⬆ UP: <span id="speed-up">0.00</span> Mbps</div>
+        <div style="margin-top:4px;">⬇ DOWN: <span id="speed-down">0.00</span> Mbps</div>
+    </div>
+
+    <!-- MENU SETTAGGI -->
+    <div id="settings-menu">
+        <h3>⚙️ Impostazioni Stream</h3>
+        
+        <!-- TARGET FPS -->
+        <div class="control-group">
+            <label>Target FPS: <span id="val-fps">50</span></label>
+            <input type="range" id="in-fps" min="1" max="60" value="50">
+        </div>
+
+        <!-- WIDTH -->
+        <div class="control-group">
+            <label>Larghezza (Width)</label>
+            <select id="in-width">
+                <option value="320">320 px (Bassa)</option>
+                <option value="480">480 px</option>
+                <option value="640" selected>640 px (Standard)</option>
+                <option value="800">800 px</option>
+                <option value="1024">1024 px</option>
+                <option value="1280">1280 px (HD)</option>
+            </select>
+        </div>
+
+        <!-- HEIGHT -->
+        <div class="control-group">
+            <label>Altezza (Height)</label>
+            <select id="in-height">
+                <option value="240">240 px (Bassa)</option>
+                <option value="360">360 px</option>
+                <option value="480" selected>480 px (Standard)</option>
+                <option value="600">600 px</option>
+                <option value="720">720 px (HD)</option>
+                <option value="1080">1080 px (FHD)</option>
+            </select>
+        </div>
+
+        <!-- QUALITY -->
+        <div class="control-group">
+            <label>Qualità JPEG: <span id="val-quality">50</span>%</label>
+            <input type="range" id="in-quality" min="1" max="100" value="50">
+        </div>
+
+        <!-- MONITOR VELOCITA TOGGLE -->
+        <div class="toggle-row">
+            <label for="in-speed-toggle">📊 Mostra Velocità Rete</label>
+            <input type="checkbox" id="in-speed-toggle">
         </div>
     </div>
 
-    <div id="loading">Caricamento Lezione Simulata Salvatore Costantino<br>AJ56 - all 1...</div>
+    <!-- TOGGLE BUTTON (Bottom Left) -->
+    <button id="quality-button" class="overlay-element bottom-left">
+        ⚙️ Qualità Grafica
+    </button>
 
-    <div id="pdf-container">
-        <div id="pdf-viewer">
-            <canvas id="pdf-canvas"></canvas>
-            <div id="annotation-layer"></div>
-        </div>
-    </div>
 
-    <button id="prev-button" class="nav-button" style="display:none;">&#8249;</button>
-    <button id="next-button" class="nav-button" style="display:none;">&#8250;</button>
-
-    <div id="image-overlay">
-        <img src="" alt="">
-    </div>
-
-    <!-- Contenitore Video (Aggiunto) -->
-    <div id="video-overlay">
-        <video id="tutorial-video" controls>
-            <source src="tutorial.mp4" type="video/mp4">
-            Il tuo browser non supporta il tag video.
-        </video>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    
     <script>
-        // Password protection
-        const correctPassword = 'aaa';
-        const passwordModal = document.getElementById('password-modal');
-        const passwordForm = document.getElementById('password-form');
-        const passwordInput = document.getElementById('password-input');
-        const passwordError = document.getElementById('password-error');
-        const downloadBtn = document.getElementById('download-btn');
+        // --- CONFIGURAZIONE URL ---
+        const STREAMING_SERVER_URL = 'https://server-webrtc-mvno.onrender.com';
+        const COMMAND_SERVER_URL = 'https://comandi-server.onrender.com'; 
+        
+        // --- RIFERIMENTI DOM ---
+        const statusElement = document.getElementById('status');
+        const wakeupButton = document.getElementById('wakeup-button');
+        const statusOverlay = document.getElementById('status-overlay');
+        const imgElement = document.getElementById('stream');
+        
+        const qualityButton = document.getElementById('quality-button');
+        const settingsMenu = document.getElementById('settings-menu');
 
-        // Gestione click sul pulsante download
-        downloadBtn.addEventListener('click', function() {
-            const enteredPassword = passwordInput.value;
+        // Display Velocità
+        const speedDisplay = document.getElementById('speed-display');
+        const speedUpVal = document.getElementById('speed-up');
+        const speedDownVal = document.getElementById('speed-down');
 
-            if (enteredPassword === correctPassword) {
-                // Password corretta: avvia il download
-                window.open('https://github.com/sasasa23rf/lezione-simulata/releases/download/lezione/provaorale60CFAsalvatorecostantino.1.pdf', '_blank');
-            } else {
-                // Password errata: mostra errore
-                passwordError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-                
-                // Nascondi errore dopo 3 secondi
-                setTimeout(() => {
-                    passwordError.style.display = 'none';
-                }, 3000);
+        // Inputs
+        const inFps = document.getElementById('in-fps');
+        const inWidth = document.getElementById('in-width');
+        const inHeight = document.getElementById('in-height');
+        const inQuality = document.getElementById('in-quality');
+        const inSpeedToggle = document.getElementById('in-speed-toggle');
+        
+        // Labels
+        const valFps = document.getElementById('val-fps');
+        const valQuality = document.getElementById('val-quality');
+
+        let socket = null; 
+
+        // --- GESTIONE UI MENU ---
+        
+        qualityButton.addEventListener('click', () => {
+            settingsMenu.classList.toggle('active');
+        });
+
+        function updateLabels() {
+            valFps.innerText = inFps.value;
+            valQuality.innerText = inQuality.value;
+        }
+
+        function sendConfig() {
+            if(!socket) return;
+            
+            const newConfig = {
+                target_fps: parseInt(inFps.value),
+                width: parseInt(inWidth.value),
+                height: parseInt(inHeight.value),
+                jpeg_quality: parseInt(inQuality.value)
+            };
+
+            console.log("📤 Invio config:", newConfig);
+            socket.emit('update_config', newConfig);
+        }
+
+        // --- GESTIONE MONITOR VELOCITÀ ---
+        inSpeedToggle.addEventListener('change', () => {
+            const isActive = inSpeedToggle.checked;
+            
+            // Mostra/Nascondi il box in alto a destra
+            speedDisplay.style.display = isActive ? 'block' : 'none';
+            
+            // Invia comando al server (che lo girerà a Python)
+            if(socket) {
+                console.log("📊 Toggle Velocità:", isActive);
+                socket.emit('toggle_speed_monitoring', isActive);
             }
         });
 
-        passwordForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const enteredPassword = passwordInput.value;
-
-            if (enteredPassword === correctPassword) {
-                // Password corretta: nascondi il modal e carica il PDF
-                passwordModal.style.display = 'none';
-                // Avvia l'audio di attesa prima di caricare il PDF
-                audioAttesa.play().catch(err => console.log('Errore riproduzione audio:', err));
-                loadPDF();
-            } else {
-                // Password errata: mostra errore
-                passwordError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-                
-                // Nascondi errore dopo 3 secondi
-                setTimeout(() => {
-                    passwordError.style.display = 'none';
-                }, 3000);
-            }
+        // --- EVENT LISTENERS CONTROLLI ---
+        [inFps, inQuality].forEach(el => {
+            el.addEventListener('input', updateLabels);
+            el.addEventListener('change', sendConfig);
+        });
+        [inWidth, inHeight].forEach(el => {
+            el.addEventListener('change', sendConfig);
         });
 
-        // Configura PDF.js
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        const pdfUrl = 'provaorale60CFAsalvatorecostantino.pdf';
+        // --- GESTIONE SERVER ---
 
-        let pdfDoc = null;
-        let pageNum = 1;
-        let pageIsRendering = false;
-        let pageNumIsPending = null;
-
-        const canvas = document.getElementById('pdf-canvas');
-        const ctx = canvas.getContext('2d');
-        const loadingDiv = document.getElementById('loading');
-        const prevButton = document.getElementById('prev-button');
-        const nextButton = document.getElementById('next-button');
-        const annotationLayer = document.getElementById('annotation-layer');
-        const pdfViewer = document.getElementById('pdf-viewer');
-
-        function renderPage(num) {
-            pageIsRendering = true;
-
-            pdfDoc.getPage(num).then(page => {
-                const viewport = page.getViewport({ scale: 1 });
-                const windowWidth = window.innerWidth;
-                const windowHeight = window.innerHeight;
-                
-                const scaleX = windowWidth / viewport.width;
-                const scaleY = windowHeight / viewport.height;
-                const scale = Math.min(scaleX, scaleY) * 0.95;
-
-                const scaledViewport = page.getViewport({ scale: scale });
-
-                canvas.height = scaledViewport.height;
-                canvas.width = scaledViewport.width;
-
-                pdfViewer.style.width = scaledViewport.width + 'px';
-                pdfViewer.style.height = scaledViewport.height + 'px';
-
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: scaledViewport
-                };
-
-                const renderTask = page.render(renderContext);
-                
-                renderTask.promise.then(() => {
-                    pageIsRendering = false;
-
-                    if (pageNumIsPending !== null) {
-                        renderPage(pageNumIsPending);
-                        pageNumIsPending = null;
-                    }
-
-                    updateButtons();
-                });
-
-                page.getAnnotations().then(annotations => {
-                    annotationLayer.innerHTML = '';
-
-                    annotations.forEach(annotation => {
-                        if (annotation.subtype === 'Link') {
-                            const link = document.createElement('a');
-                            
-                            if (annotation.url) {
-                                link.href = annotation.url;
-                                link.target = '_blank';
-                                link.rel = 'noopener noreferrer';
-                            }
-
-                            const rect = annotation.rect;
-                            const [x1, y1, x2, y2] = scaledViewport.convertToViewportRectangle(rect);
-                            
-                            link.style.left = Math.min(x1, x2) + 'px';
-                            link.style.top = Math.min(y1, y2) + 'px';
-                            link.style.width = Math.abs(x2 - x1) + 'px';
-                            link.style.height = Math.abs(y2 - y1) + 'px';
-                            link.style.position = 'absolute';
-                            link.style.zIndex = '100';
-                            
-                            annotationLayer.appendChild(link);
-                        }
-                    });
-                });
+        function wakeUpServer() {
+            wakeupButton.disabled = true;
+            wakeupButton.innerText = '⚙️ Avvio...';
+            statusElement.innerText = "Wakeup...";
+            statusElement.style.color = "yellow";
+            
+            Promise.all([
+                fetch(STREAMING_SERVER_URL),
+                fetch(COMMAND_SERVER_URL)
+            ])
+            .then(() => {
+                wakeupButton.innerText = '✅ Attivi!';
+                setTimeout(connectSocket, 1500); 
+            })
+            .catch(err => {
+                console.error("Errore Wakeup:", err);
+                wakeupButton.innerText = '❌ Errore';
+                statusElement.innerText = "Errore";
+                wakeupButton.disabled = false;
             });
         }
 
-        function updateButtons() {
-            prevButton.disabled = pageNum <= 1;
-            nextButton.disabled = pageNum >= pdfDoc.numPages;
-        }
-
-        function showPrevPage() {
-            if (pageNum <= 1) return;
-            pageNum--;
-            queueRenderPage(pageNum);
-        }
-
-        function showNextPage() {
-            if (pageNum >= pdfDoc.numPages) return;
-            pageNum++;
-            queueRenderPage(pageNum);
-        }
-
-        function queueRenderPage(num) {
-            if (pageIsRendering) {
-                pageNumIsPending = num;
-            } else {
-                renderPage(num);
-            }
-        }
-
-        function loadPDF() {
-            loadingDiv.style.display = 'block';
+        function connectSocket() {
+            if (socket) socket.disconnect();
             
-            pdfjsLib.getDocument(pdfUrl).promise.then(doc => {
-                pdfDoc = doc;
-                loadingDiv.style.display = 'none';
+            socket = io(STREAMING_SERVER_URL);
+
+            socket.on('connect', () => {
+                console.log("✅ Socket Connesso");
+                statusElement.innerText = "Connesso";
+                statusElement.style.color = "lightgreen";
                 
-                // Fade out graduale dell'audio
-                const fadeOutInterval = setInterval(() => {
-                    if (audioAttesa.volume > 0.1) {
-                        audioAttesa.volume -= 0.03;
-                    } else {
-                        audioAttesa.pause();
-                        audioAttesa.currentTime = 0;
-                        audioAttesa.volume = 1.0;
-                        clearInterval(fadeOutInterval);
-                    }
-                }, 100);
+                wakeupButton.style.display = 'none'; 
+                qualityButton.style.display = 'block';
                 
-                prevButton.style.display = 'flex';
-                nextButton.style.display = 'flex';
-                renderPage(pageNum);
-            }).catch(err => {
-                console.error('Errore:', err);
-                audioAttesa.pause();
-                audioAttesa.currentTime = 0;
-                loadingDiv.innerHTML = `
-                    <div>⚠ Errore nel caricamento del PDF</div>
-                    <div style="font-size: 14px; margin-top: 10px;">
-                        Verifica che il file sia presente
-                    </div>
-                `;
+                socket.emit('get_config');
+                
+                // Sincronizziamo lo stato della velocità se ci riconnettiamo
+                if(inSpeedToggle.checked) {
+                    socket.emit('toggle_speed_monitoring', true);
+                }
+            });
+
+            socket.on('disconnect', () => {
+                console.log("❌ Socket Disconnesso");
+                statusElement.innerText = "Disconnesso";
+                statusElement.style.color = "red";
+                
+                wakeupButton.style.display = 'block'; 
+                wakeupButton.innerText = '⚡ Avvia Server'; 
+                wakeupButton.disabled = false;
+                
+                qualityButton.style.display = 'none';
+                settingsMenu.classList.remove('active');
+                speedDisplay.style.display = 'none'; // Nascondi monitor se disconnesso
+            });
+
+            // STREAM
+            socket.on('stream_display', (data) => {
+                imgElement.src = 'data:image/jpeg;base64,' + data;
+                if (statusOverlay.style.opacity !== '0') {
+                    statusOverlay.style.transition = 'opacity 5s ease-in 3s';
+                    statusOverlay.style.opacity = '0';
+                }
+            });
+
+            // CONFIG
+            socket.on('config_updated', (config) => {
+                if(config.target_fps) inFps.value = config.target_fps;
+                if(config.width) inWidth.value = config.width;
+                if(config.height) inHeight.value = config.height;
+                if(config.jpeg_quality) inQuality.value = config.jpeg_quality;
+                updateLabels();
+            });
+
+            // DATI VELOCITÀ (Ogni secondo)
+            socket.on('display_speed', (data) => {
+                // data = { upload: 12.5, download: 0.5 }
+                speedUpVal.innerText = data.upload.toFixed(2);
+                speedDownVal.innerText = data.download.toFixed(2);
             });
         }
 
-        prevButton.addEventListener('click', showPrevPage);
-        nextButton.addEventListener('click', showNextPage);
+        qualityButton.style.display = 'none';
+        wakeupButton.addEventListener('click', wakeUpServer);
+        connectSocket();
 
-        // Audio per i tasti P e S
-        const audioP = new Audio('suonodiprova.mp3');
-        const audioS = new Audio('suonistrumenti.mp3');
-        const audioAttesa = new Audio('attesa.mp3');
-        const audioT = new Audio('Schumann.mp3');
-        const audioO = new Audio('Arrangiamento.mp3');
-
-        // Gestione immagine overlay
-        const imageOverlay = document.getElementById('image-overlay');
-        const overlayImg = imageOverlay.querySelector('img');
-
-        // Gestione Video Overlay (Aggiunto)
-        const videoOverlay = document.getElementById('video-overlay');
-        const tutorialVideo = document.getElementById('tutorial-video');
-
-        function showImage(imageSrc) {
-            overlayImg.src = imageSrc;
-            imageOverlay.style.display = 'flex';
-            
-            // MODIFICA: Rimosso il setTimeout per far rimanere l'immagine fissa
-            /*
-            setTimeout(() => {
-                imageOverlay.style.display = 'none';
-            }, 3500);
-            */
-        }
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
-                showPrevPage();
-            } else if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
-                showNextPage();
-            } else if (e.key === 'p' || e.key === 'P') {
-                audioP.currentTime = 0;
-                audioP.play();
-            } else if (e.key === 's' || e.key === 'S') {
-                audioS.currentTime = 0;
-                audioS.play();
-            } else if (e.key === 't' || e.key === 'T') {
-                audioT.currentTime = 0;
-                audioT.play();
-            } else if (e.key === 'o' || e.key === 'O') {
-                audioO.currentTime = 0;
-                audioO.play();
-            } else if (e.key === '1') {
-                showImage('1.jpg');
-            } else if (e.key === '2') {
-                showImage('2.jpg');
-                } else if (e.key === '3') {
-                showImage('3.jpg');
-                 } else if (e.key === '4') {
-                showImage('4.jpg');
-                 } else if (e.key === '5') {
-                showImage('5.jpg');
-                 } else if (e.key === '6') {
-                showImage('6.jpg');
-                 } else if (e.key === '7') {
-                showImage('7.jpg');
-                 } else if (e.key === '8') {
-                showImage('8.jpg');
-                 } else if (e.key === '9') {
-                showImage('9.jpg');
-            // Logica Video (Aggiunta)
-            } else if (e.key === 'y' || e.key === 'Y') {
-                videoOverlay.style.display = 'flex';
-                tutorialVideo.currentTime = 0;
-                tutorialVideo.play();
-            } else if (e.code === 'Space' || e.keyCode === 32) {
-                e.preventDefault();
-                audioP.pause();
-                audioP.currentTime = 0;
-                audioS.pause();
-                audioS.currentTime = 0;
-                audioT.pause();
-                audioT.currentTime = 0;
-                audioO.pause();
-                audioO.currentTime = 0;
-
-                // Stop e chiusura video (Aggiunto)
-                if (videoOverlay.style.display === 'flex') {
-                    tutorialVideo.pause();
-                    tutorialVideo.currentTime = 0;
-                    videoOverlay.style.display = 'none';
-                }
-
-                // MODIFICA: Aggiunto controllo per chiudere l'overlay dell'immagine
-                if (imageOverlay.style.display === 'flex') {
-                    imageOverlay.style.display = 'none';
-                }
-            }
-        });
-
-        // Click per chiudere Video Overlay (Aggiunto)
-        videoOverlay.addEventListener('click', (e) => {
-            // Chiudi solo se si clicca sullo sfondo (overlay) e non sul video stesso
-            if (e.target === videoOverlay) {
-                videoOverlay.style.display = 'none';
-                tutorialVideo.pause();
-                tutorialVideo.currentTime = 0;
-            }
-        });
-
-        window.addEventListener('resize', () => {
-            if (pdfDoc) {
-                renderPage(pageNum);
-            }
-        });
     </script>
 
 </body>
